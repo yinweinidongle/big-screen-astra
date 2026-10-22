@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {createRenderer,h,ref,nextTick,reactive} from 'vue';
 import {useDataRuntime} from '../src/workbench/runtime/data.js';
 import {validateProject,projectForExport} from '../src/workbench/schema.js';
+import {checkAcceptance} from '../src/workbench/agent/changes.js';
 import {finishAgentTurn} from '../src/workbench/agent/state.js';
 import {createDesignEngine} from '../src/workbench/agent/engine.js';
 import {runDesignAgent,waitForCode} from '../src/workbench/agent/runtime.js';
@@ -13,6 +14,7 @@ import {makeWorkspace,writeCodeFiles,workspaceDirty} from '../src/workbench/code
 
 const p=makeProject('campus'),header=p.nodes.find(n=>n.type==='header'),scene=p.nodes.find(n=>n.type==='scene'),metric=p.nodes.find(n=>n.type==='number');
 assert.equal(validateProject(reactive(p)).nodes.length,p.nodes.length,'Saved reactive projects must reopen without DataCloneError');assert.equal(projectForExport(reactive(p)).id,p.id);
+assert.deepEqual(checkAcceptance(p,[{kind:'title',value:resolveHeaderConfig(header).title}]),[],'A creation plan can verify the unique header before its ID exists');
 const plan=(extra={})=>({mode:'refine',scope:'all',title:'局部修改',industry:'campus',style:'保留现有风格',objectives:['只修改目标'],...extra});
 const call=(id,name,args)=>({id,type:'function',function:{name,arguments:JSON.stringify(args)}});
 const answer=(calls=[],content='已完成。',extra={})=>({message:{role:'assistant',content,tool_calls:calls},usage:{},...extra});
@@ -33,7 +35,17 @@ const changes=await e.execute('get_design_changes',{});assert.equal(changes.coun
 const objects=createDesignEngine(p);await objects.execute('add_scene_objects',{id:scene.id,objects:[{preset:'pump',name:'Pump A'}]});const objectId=objects.project.nodes.find(n=>n.id===scene.id).props.sceneObjects[0].id,before=objects.project;
 assert(!(await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{name:'must roll back'}},{objectId:'missing',changes:{name:'bad'}}]})).ok);
 assert.strictEqual(objects.project,before);assert.equal(objects.project.nodes.find(n=>n.id===scene.id).props.sceneObjects[0].name,'Pump A');
-assert((await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{name:'Pump B'}}]})).ok);assert.equal(before.nodes.find(n=>n.id===scene.id).props.sceneObjects[0].name,'Pump A');
+assert((await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{name:'Pump B'}}]})).ok);
+assert(!(await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{material:{color:'#22d3ee'}}}]})).ok,'Original material cannot silently accept ignored overrides');
+assert((await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{material:{preset:'hologram',color:'#22d3ee',opacity:.55}}}]})).ok);
+assert((await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{material:{opacity:.7}}}]})).ok,'Existing override materials accept incremental changes');
+const sceneState=await objects.execute('get_scene_state',{id:scene.id});assert(sceneState.materialPresets.some(m=>m.id==='hologram'));
+assert((await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{material:{preset:'amber'}}}]})).ok);
+const amber=objects.project.nodes.find(n=>n.id===scene.id).props.sceneObjects.find(o=>o.id===objectId).material;assert.equal(amber.color,'#d8a36b');assert.equal(amber.opacity,1,'Preset changes reset stale parameters');
+assert((await objects.execute('update_scene_objects',{id:scene.id,updates:[{objectId,changes:{material:{preset:'glass',color:'#22d3ee'}}}]})).ok);
+const glass=objects.project.nodes.find(n=>n.id===scene.id).props.sceneObjects.find(o=>o.id===objectId).material;assert.equal(glass.color,'#22d3ee');assert.equal(glass.opacity,.48,'Explicit overrides apply over new preset defaults');
+
+assert.equal(before.nodes.find(n=>n.id===scene.id).props.sceneObjects[0].name,'Pump A');
 assert.equal((await objects.execute('get_scene_state',{id:scene.id})).objects[0].name,'Pump B');
 assert((await objects.execute('remove_scene_objects',{id:scene.id,objectIds:[objectId]})).ok);assert.equal(objects.project.nodes.find(n=>n.id===scene.id).props.sceneObjects.length,0);
 assert.equal(objects.project.nodes.filter(n=>n.type==='scene').length,1);

@@ -2,106 +2,82 @@
 
 # Astra Studio
 
-### Turn data into a space you can explore.
+Build interactive 3D data dashboards with natural language.
 
-Visual dashboard studio · Three.js digital twins · SVG header designer
+**Vue 3 · Three.js · ECharts · MIT**
 
-[中文](README.md) · [English](README.en.md) · [日本語](README.ja.md)
+[中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · [Deutsch](README.de.md)
 
-[Live demo](https://yinweinidongle.github.io/big-screen-astra/) · [Templates](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Header Studio](https://yinweinidongle.github.io/big-screen-astra/header-studio/) · [Full service](https://shanghai-city-observatory.brainy-pony-0848.chatgpt.site/)
-
-![MIT](https://img.shields.io/badge/license-MIT-8fb6ff) ![Vue 3](https://img.shields.io/badge/Vue-3-42b883) ![Three.js](https://img.shields.io/badge/Three.js-WebGL-101827) ![Node](https://img.shields.io/badge/Node-%E2%89%A522.12-5c9e56)
-
-![Actual screenshots of the four industry templates](docs/screenshots/overview.webp)
+[Open Studio](https://yinweinidongle.github.io/big-screen-astra/) · [AI Copilot](https://shanghai-city-observatory.brainy-pony-0848.chatgpt.site/?assistant=1) · [Header Studio](https://yinweinidongle.github.io/big-screen-astra/header-studio/)
 
 </div>
 
-Astra Studio brings a freeform canvas, data visualization, interactive 3D scenes and animated header design into one workspace. Start with a template, then configure each component's layout, style, data and interactions. All included business values are demonstration data. These documents are available in three languages; the editor currently uses a Chinese interface.
+![Four distinct templates: city, agriculture, industry and campus](docs/screenshots/overview.webp)
 
-## Four distinct templates
+## One prompt. An editable dashboard.
 
-Each template has its own layout, panels, charts and scene composition.
+![Actual Copilot workflow: prompt, scene generation, checks and automatic application](docs/screenshots/copilot-generate.gif)
 
-| Template | Visual direction and 3D details | Demo |
-| --- | --- | --- |
-| City operations | Cool blue command deck; 342 instanced buildings, Shanghai landmarks, bridges, waterfront paths and traffic | [City](https://yinweinidongle.github.io/big-screen-astra/templates/city/) |
-| Precision agriculture | Emerald and warm gold; greenhouses, 1,134 plants, orchards, irrigation filters and a drone | [Agriculture](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) |
-| Smart manufacturing | Graphite and amber; cutaway factory, robot arms, AGVs, conveyors, pipes and maintenance walkways | [Industry](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) |
-| Connected campus | Violet and silver glass; curtain walls, skybridges, rooftop solar, EV chargers and a fountain | [Campus](https://yinweinidongle.github.io/big-screen-astra/templates/campus/) |
+**32 tools** for planning, layouts, charts, scenes and frontend code. Automatically create or refine, continue edits, check actual execution, resume interrupted work and undo each turn.
 
-## Design workspace
+<sub>This real recording generated 15 components in 9.6 seconds using demo data. Timing varies by model and network.</sub>
 
-![Actual Astra Studio editor](docs/screenshots/workbench.webp)
+<sub>Real interactions, edited to shorten waits and repetition.</sub>
 
-- **Freeform layout:** drag, resize in eight directions, multi-select, group, reorder, lock, snap, align and distribute. Fit, cover, width-fit and stretch display modes.
-- **Visual controls:** 30 components, 14 chart types, six themes, six backgrounds and eight border styles. Rolling numbers, scrolling lists, gradients, glow, vignette and color matrices.
-- **Spatial components:** Three.js scenes and globe, GLB/glTF loading, materials, animation, FlyTo, orbit, model picking and POI cards. Mapbox buildings and DEM terrain require your own public token.
-- **Data and interactions:** static JSON, HTTP, WebSocket, field mapping, refresh intervals, click/hover events, filtering and drill-down. SQL uses restricted D1 queries in the Worker; connect other databases through your own HTTP gateway.
-- **Portable projects:** IndexedDB storage, undo/redo and local snapshots. Import/export JSON or `.astra.zip` packages containing project assets.
+<details>
+<summary>Refine components</summary>
 
-## Scene Studio · Build inside an existing scene
+Update the title and number card while keeping the rest of the dashboard.
 
-![Scene Studio editor](docs/screenshots/scene-editor.webp)
+![Refine components](docs/screenshots/copilot-refine.gif)
 
-Choose **场景编辑** in the workspace toolbar, or select a 3D component and choose **进入 3D 场景编辑**. The current city, farm, factory or campus stays in place. New models are saved as objects inside that same dashboard component.
+</details>
 
-1. Pick from 10 procedural assets: office tower, warehouse, solar array, turbine, charger, robot arm, pump, camera, tree and container. Three single-device GLB presets are also included, alongside custom GLB/glTF upload.
-2. Move, rotate and scale with a gizmo, or click a scene surface to place an object. Use world/local space, snapping, duplicate, visibility, locking, undo/redo and saved initial views. `W / E / R` switch tools; `F` focuses the selection.
-3. Start with eight material presets, then tune color, metalness, roughness, opacity, emissive intensity and holographic scans. Add rotation, float or pulse motion, or play embedded GLB animations.
-4. Attach a label to a model or place a standalone label on a surface. Configure its title, description, status, up to eight information rows, accent color and HTTP/HTTPS detail link. Use **交互预览** to test clicks and popup cards.
-5. **应用并返回** saves the changes to the original component. Model files travel with `.astra.zip` packages; annotations and transforms remain part of projects, snapshots and published configurations.
+<details>
+<summary>Write and iterate on shaders</summary>
 
-Each 3D component supports up to 64 added objects. The built-in world remains a base layer; added models and labels are independently editable. Object edits do not rebuild the base world. Popup information fields are configured by the user; component-to-component actions remain available in the interaction inspector.
+Add a custom GLSL energy ring to the existing scene.
 
-![Custom annotations and information panels](docs/screenshots/scene-panel.webp)
+![Write and iterate on shaders](docs/screenshots/copilot-shader.gif)
 
-## Astra Copilot · Dashboard design agent
+</details>
 
-![Actual tool execution and delivery checks](docs/screenshots/agent-copilot.webp)
+<details>
+<summary>Switch scene materials</summary>
 
-Open **智能创作** to describe your business, visual direction, metrics and scene. The model automatically decides whether to create a new dashboard or refine the current one from your request and canvas context; no manual mode switch is needed. The agent uses **32 tools** to create editable dashboards or refine the current screen / selected components, including headers, charts, existing 3D scenes, materials and interactive annotations.
+Graphite, amber alloy and blue glass. Positions and labels stay in place.
 
-- **Execute → feedback → evaluate → repair**: inspect real arguments, results, timings and failures. Checks include DOM rendering, text overflow, bounds, data fields, interaction references and Three.js telemetry, with limits of 16 model rounds and 2 repair rounds.
-- **Automatic application and continued editing**: tools first work in an isolated preview, then apply a completed, validated result automatically as one undoable edit per turn. Follow-up changes use the latest complete screen, including a recovered unapplied draft. Selection scope and locked objects are protected; runtime errors or manual-edit conflicts retain the draft without overwriting the canvas.
-- **Precise tools and checks**: batch component queries, scene inspection, duplication, scene-object removal, live runtime inspection and change manifests. Scoped plans restrict target IDs and declare removals; acceptance checks can verify titles, properties and component counts.
-- **Recover and continue**: completed tool rounds are checkpointed locally; resume after a refresh or retry model failures. Delivery shows added, updated, removed and retained components with one-click per-turn undo. Bounded transcripts and batched preview updates reduce repeated work.
-- **Configurable providers**: OpenRouter / `anthropic/claude-haiku-5.5` by default, plus DeepSeek, Qwen, GLM, Kimi, Doubao, SiliconFlow, MiniMax, OpenAI, Anthropic, Gemini and custom HTTPS-compatible endpoints. Refresh available models or enter an ID and test actual function calling. Other providers require their own keys and tool-capable models.
-- **Server-side credentials**: the shared default is restricted to the workspace owner. Personal profiles are isolated per account and encrypted with AES-GCM in D1; provider keys never enter client bundles, project JSON or exports. A changed provider host requires a new key.
+![Switch scene materials](docs/screenshots/copilot-materials.gif)
 
-The score measures structural and runtime checks, not screenshot aesthetics. Unconnected demonstrations are labeled as demo data; binding a source does not claim a successful connection.
-
-For local development, copy `.dev.vars.example` to `.dev.vars`, set `AGENT_DEFAULT_API_KEY`, `AGENT_DEFAULT_MODEL` and a stable 64-character hexadecimal `AGENT_ENCRYPTION_KEY`, then run `npm run dev`. Production requires server runtime secrets and `AGENT_DEFAULT_OWNER_ID` or `AGENT_DEFAULT_OWNER_EMAIL`, with Sites authentication. Never put credentials in `VITE_*` variables. Rotating the encryption key requires re-saving personal provider keys.
-
-GitHub Pages remains a static editor. **携带项目打开智能创作** transfers the current project, prompt and local assets (100 MB total limit) to the full service through an origin-checked window bridge. The full service preserves the previous project and requires sign-in; receiving a project does not automatically make a paid model call.
-
-[Workflow audit, verification evidence and remaining boundaries](docs/agent-workflow-audit.md).
-
-## Code Studio · Frontend programming workspace
-
-![Actual frontend code workspace](docs/screenshots/code-studio.webp)
-
-The agent writes frontend source files to create new geometry, charts, particles, shaders and interactions. Multi-file JS / HTML / CSS / GLSL / JSON, exact edits, checkpoints, parameters and source ZIP export are supported. Three.js objects join the existing scene; custom interfaces become editable dashboard components. Business shapes and algorithms are defined by generated code.
-
-Writing, actual compilation, execution feedback, repair and evaluation share the same tool loop. Completed agent changes apply automatically after checks and can be undone per turn; manual code editing retains its run-preview-apply workflow. [API contract, architecture references and runtime limits](docs/frontend-code-agent.md).
-
-## Header Studio
-
-![Actual Header Studio editor](docs/screenshots/header-studio.webp)
-
-Choose from 12 backgrounds with calibrated SVG paths, upload artwork, draw polylines or curves, move nodes and titles, mirror paths in sync and automatically trim excess segments at intersections.
-
-Fifteen effects cover comets, fading trails, ghosts, moving dots, particles, beads, pulses, signal codes, scans, converging flows, ripples, spectra, arcs, breathing light and static outlines. Adjust color, speed, direction, width and glow.
-
-Export a standalone Vue single-file component or a ZIP with the component, image and JSON configuration. Exported components require Vue 3.5+. Shortcuts: `P` polyline, `B` curve, `Enter` finish, `V` select, `Space` pause, `Ctrl/⌘ Z` undo.
-
-The Tech Header widget and Header Studio share one complete configuration and SVG renderer. Select the widget → open **进入 Header 设计器** → apply with **应用到组件** to edit in place. Preview uses the actual dashboard, including its 3D scene. Fonts, weight, size, position, spacing, gradients, text glow, transparency and fitting update immediately. Preset changes preserve the title; cancel protection, undo, reopening and project import/export preserve the composition. The standalone editor's **用于大屏** transfers a design to the workbench for review before applying.
-
-![Connected header and dashboard editor](docs/screenshots/header-connected.webp)
+</details>
 
 
-## Run locally
+## Core capabilities
 
-Requires **Node.js 22.12+** and npm.
+| Capability | Highlights |
+| --- | --- |
+| **Free canvas** | Drag, resize, select, group and snap. Collapse either sidebar or enter canvas focus mode. |
+| **Visualization** | 30 components and 14 chart types. Flip counters, scrolling lists, glow, vignette and color matrices. |
+| **3D editing** | Add GLB/glTF, buildings and equipment to existing scenes. Edit materials, shaders, animation and interactive POIs. |
+| **Frontend coding** | Generate JS / HTML / CSS / GLSL. Actual compilation, runtime feedback, multiple files and source export. |
+| **Header Studio** | 12 backgrounds and 15 flow effects. Draw SVG paths, mirror, trim intersections and export Vue components. |
+| **Data and delivery** | JSON, HTTP, WebSocket, D1 SQL and linked interactions. Portable projects, snapshots and password / token sharing. |
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/scene-editor.webp" alt="Edit models, materials and annotations inside an existing scene" /></td>
+<td width="50%"><img src="docs/screenshots/header-studio.webp" alt="Design backgrounds, SVG paths and typography together" /></td>
+</tr>
+<tr><td align="center">Scene Studio</td><td align="center">Header Studio</td></tr>
+</table>
+
+## Industry templates
+
+[Smart City](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Agriculture](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [Industry](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [Campus](https://yinweinidongle.github.io/big-screen-astra/templates/campus/)
+
+## Quick start
+
+Node.js **22.12+**
 
 ```bash
 git clone https://github.com/yinweinidongle/big-screen-astra.git
@@ -110,60 +86,12 @@ npm ci
 npm run dev
 ```
 
-The dev command applies local D1 migrations and starts Vite on `:5173` and the Worker on `:8787`. A development identity is enabled only for this local workflow.
+Connect Copilot: copy `.dev.vars.example` to `.dev.vars`, then configure your model API key and encryption key. Supports OpenRouter, DeepSeek, Qwen, Kimi, OpenAI, Anthropic, Gemini and compatible endpoints.
 
-```bash
-npm test                 # Editor, scenes, real D1/R2, headers and trimming
-npm run build            # Frontend + Worker
-npm run preview          # Preview the full build locally
-npm run build:pages      # Static output in dist/pages
-npm run preview:pages    # Preview the Pages build
-```
+[Development & deployment](docs/development.md) · [Code API](docs/frontend-code-agent.md) · [Agent architecture & audit](docs/agent-workflow-audit.md)
 
-## Deployment options
+<sub>GitHub Pages runs the static editor. AI, cloud storage and protected sharing require the full service. The editor UI is currently in Chinese.</sub>
 
-| Capability | GitHub Pages | Worker + D1 + R2 |
-| --- | :---: | :---: |
-| Templates, 3D scenes, header editing and component export | ✓ | ✓ |
-| Local projects, assets, snapshots and project packages | ✓ | ✓ |
-| Direct browser HTTP / WebSocket connections | Upstream must permit CORS / connections | ✓ |
-| Account-scoped cloud projects and assets | — | ✓ |
-| D1 SQL, publication snapshots, password / token sharing | — | ✓ |
+---
 
-**GitHub Pages:** `.github/workflows/pages.yml` validates, builds and deploys pushes to `master` or `main`. Select **GitHub Actions** under Settings → Pages → Source. The workflow derives the base path from the repository name; the local default is `/big-screen-astra/`. Override it with `PAGES_BASE_PATH=/my-repo/ npm run build:pages`. Physical HTML entry points support direct nested links and refreshes. See the [Vite deployment guide](https://vite.dev/guide/static-deploy.html#github-pages).
-
-**Full service:** `npm run build` produces `dist/client` and `dist/server`. Configure Worker bindings `ASSETS`, D1 `DB` and R2 `BUCKET`, then apply `drizzle/` migrations. Cloud writes use a trusted identity supplied by Sites; another host requires adapting server authentication. Never enable `LOCAL_DEV` in production. Protected sharing requires server-side verification and is unavailable on static hosting.
-
-## Routes
-
-Routes below are relative to the deployment base path.
-
-| Path | Page |
-| --- | --- |
-| `/`, `/studio/` | Visual editor |
-| `/templates/city/`, `/templates/agriculture/`, `/templates/industry/`, `/templates/campus/` | Editable industry template previews |
-| `/header-studio/` | Header designer |
-| `/city/`, `/demo01/`, `/demo02/`, `/demo03/` | Original standalone city, agriculture, industry and campus dashboards |
-| `/player/` | Local project player |
-| `/view/:slug` | Server-published dashboard; full service required |
-
-## Performance and source layout
-
-Building and vegetation instancing, merged static geometry, lazy chunks, cached shadows and adaptive DPR keep rendering costs bounded. Offscreen or hidden scenes stop drawing; paused scenes render on demand. GPU resources are released on unmount. Quality presets cap rendering at 30 / 30 / 60fps and DPR at 1× / 1.5× / 2×. Actual performance depends on hardware, resolution and browser.
-
-```text
-src/workbench/          Canvas, schema, widgets, data adapters and detailed 3D scenes
-src/studio/             Header editor, SVG paths, presets and Vue/ZIP export
-src/demos/              Original standalone dashboards
-src/paths.js            Domain-root and Pages-subpath URL handling
-server/                 Identity, permissions, projects, publishing, SQL and assets
-db/ · drizzle/          D1 declarations and migrations
-scripts/                Development, builds, geometry and integration checks
-docs/screenshots/       Screenshots from the running application
-```
-
-## Contributing and license
-
-Issues and pull requests are welcome. Run `npm test` and `npm run build:pages` before submitting. For scene changes, check animation, pause, POIs and rendering cost in all four templates.
-
-Original project code is released under the [MIT License](LICENSE). Dependencies, fonts, map services and public-domain geographic data retain their respective terms; see [third-party notices](THIRD_PARTY_NOTICES.md). Artwork includes AI-generated assets with prompts in `docs/`. Procedural scenes and demo data do not represent surveying data or live equipment operations.
+[MIT](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)

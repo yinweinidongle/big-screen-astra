@@ -18,8 +18,8 @@ export function designChanges(before,after){
 }
 
 export function checkAcceptance(project,checks=[]){
- const errors=[];
- for(const c of checks){const n=project.nodes.find(n=>n.id===c.id);let actual;
+ const errors=[],headers=project.nodes.filter(n=>n.type==='header');
+ for(const c of checks){const n=c.id?project.nodes.find(n=>n.id===c.id):c.kind==='title'&&headers.length===1?headers[0]:undefined;let actual;
   if(c.kind==='count')actual=project.nodes.length;
   else if(c.kind==='exists')actual=!!n;
   else if(c.kind==='title')actual=n?.type==='header'?resolveHeaderConfig(n).title:n?.props.title;
