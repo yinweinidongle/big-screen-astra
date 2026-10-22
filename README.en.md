@@ -62,7 +62,7 @@ Each 3D component supports up to 64 added objects. The built-in world remains a 
 Open **智能创作** to describe your business, visual direction, metrics and scene. The model automatically decides whether to create a new dashboard or refine the current one from your request and canvas context; no manual mode switch is needed. The agent uses **26 tools** to create editable dashboards or refine the current screen / selected components, including headers, charts, existing 3D scenes, materials and interactive annotations.
 
 - **Execute → feedback → evaluate → repair**: inspect real arguments, results, timings and failures. Checks include DOM rendering, text overflow, bounds, data fields, interaction references and Three.js telemetry, with limits of 16 model rounds and 2 repair rounds.
-- **Preview before applying**: compare a separate draft with the original, then apply as one undoable edit. Selection scope, locked objects and manual-edit conflicts are enforced. Completed drafts can recover after refresh; stopping preserves completed work.
+- **Automatic application and continued editing**: tools first work in an isolated preview, then apply a completed, validated result automatically as one undoable edit per turn. Follow-up changes use the latest complete screen, including a recovered unapplied draft. Selection scope and locked objects are protected; runtime errors or manual-edit conflicts retain the draft without overwriting the canvas.
 - **Configurable providers**: OpenRouter / `anthropic/claude-haiku-5.5` by default, plus DeepSeek, Qwen, GLM, Kimi, Doubao, SiliconFlow, MiniMax, OpenAI, Anthropic, Gemini and custom HTTPS-compatible endpoints. Refresh available models or enter an ID and test actual function calling. Other providers require their own keys and tool-capable models.
 - **Server-side credentials**: the shared default is restricted to the workspace owner. Personal profiles are isolated per account and encrypted with AES-GCM in D1; provider keys never enter client bundles, project JSON or exports. A changed provider host requires a new key.
 
@@ -78,7 +78,7 @@ GitHub Pages remains a static editor. **携带项目打开智能创作** transfe
 
 The agent writes frontend source files to create new geometry, charts, particles, shaders and interactions. Multi-file JS / HTML / CSS / GLSL / JSON, exact edits, checkpoints, parameters and source ZIP export are supported. Three.js objects join the existing scene; custom interfaces become editable dashboard components. Business shapes and algorithms are defined by generated code.
 
-Writing, actual compilation, execution feedback, repair and evaluation share the same tool loop. Preview changes before applying and undo them as one edit. [API contract, architecture references and runtime limits](docs/frontend-code-agent.md).
+Writing, actual compilation, execution feedback, repair and evaluation share the same tool loop. Completed agent changes apply automatically after checks and can be undone per turn; manual code editing retains its run-preview-apply workflow. [API contract, architecture references and runtime limits](docs/frontend-code-agent.md).
 
 ## Header Studio
 
