@@ -12,6 +12,12 @@
     "city.webp",
     "agriculture.webp",
     "industry.webp",
-    "campus.webp"
-  ]
+    "campus.webp",
+    "scene-editor.webp",
+    "scene-panel.webp"
+  ],
+  "scene_editor_viewport": {
+    "width": 1280,
+    "height": 720
+  }
 }

@@ -1,0 +1,15 @@
+<script setup>
+defineProps({kind:String,color:{default:'#93b8d5'}});
+</script>
+<template><svg class="ase-asset-preview" viewBox="0 0 140 94" fill="none" aria-hidden="true" :style="{color}"><ellipse cx="70" cy="78" rx="47" ry="10" fill="currentColor" opacity=".04"/><path d="M20 72L70 86L120 72M32 77L82 63M58 84L107 69" stroke="currentColor" opacity=".1"/>
+ <g stroke="currentColor" stroke-width="1.1" stroke-linejoin="round">
+ <template v-if="kind==='tower'"><path d="M49 74V25L76 15L96 24V68L70 80Z" fill="currentColor" fill-opacity=".13"/><path d="M49 25L70 34L96 24M70 34V80M49 35L70 44L96 34M49 45L70 54L96 44M49 55L70 64L96 54M49 65L70 74L96 64M59 30V77M82 29V75" opacity=".7"/><path d="M61 23V17L79 12L88 17V24"/></template>
+ <template v-else-if="kind==='warehouse'||kind==='container'"><path d="M29 60V39L69 24L113 41V64L72 79Z" fill="currentColor" fill-opacity=".13"/><path d="M29 39L72 55L113 41M72 55V79M38 43V63M46 46V66M54 49V69M62 52V72M82 52V73M92 48V70M103 45V66"/><path v-if="kind==='warehouse'" d="M33 36L69 20L116 38M46 43L46 32L57 28L72 34V44"/></template>
+ <template v-else-if="kind==='solar'"><path d="M27 50L43 28L78 41L62 63ZM69 64L85 42L119 55L103 77Z" fill="currentColor" fill-opacity=".23"/><path d="M34 40L70 53M35 52L51 31M46 57L62 36M77 54L111 67M78 67L94 46M90 72L105 50M41 57V70M76 69V81M102 76V83"/></template>
+ <template v-else-if="kind==='turbine'"><path d="M67 78L71 37L74 78ZM71 37L68 12L74 13ZM71 37L96 48L93 53ZM71 37L49 54L46 49Z" fill="currentColor" fill-opacity=".2"/><circle cx="71" cy="37" r="4"/><ellipse cx="71" cy="79" rx="13" ry="4"/></template>
+ <template v-else-if="kind==='tree'"><path d="M68 76V49L73 46V76"/><path d="M70 15L48 29L41 48L53 60L77 63L96 48L94 31L81 18Z" fill="currentColor" fill-opacity=".15"/><path d="M70 15L69 41L41 48M69 41L94 31M69 41L77 63M48 29L69 41" opacity=".5"/><path d="M48 76L69 84L91 76L70 69Z"/></template>
+ <template v-else-if="kind==='robot'"><path d="M42 74L65 82L92 73L68 65ZM65 70V53L53 37L61 31L77 48V60M57 31L78 20L99 32L93 40L77 31L66 40M96 36L101 49L94 54M102 49L108 55" stroke-width="4"/><circle cx="60" cy="36" r="6" fill="#192a3a"/><circle cx="96" cy="34" r="5" fill="#192a3a"/></template>
+ <template v-else-if="kind==='camera'"><path d="M61 78V36L68 33V78M65 36L85 33M79 25L101 20L113 25V36L91 41L79 35Z" fill="currentColor" fill-opacity=".15"/><path d="M79 25L91 31L113 25M91 31V41"/><ellipse cx="103" cy="32" rx="4" ry="3"/><ellipse cx="65" cy="79" rx="13" ry="4"/></template>
+ <template v-else-if="kind==='pump'"><path d="M26 69L66 83L114 67L73 54ZM37 58V42L58 34L74 41V58L54 65Z" fill="currentColor" fill-opacity=".15"/><path d="M37 42L54 49L74 41M54 49V65M73 52L95 44V28L102 25V53L81 61M92 36L105 40"/><ellipse cx="80" cy="54" rx="8" ry="10"/></template>
+ <template v-else><path d="M52 76V28L72 20L88 26V70L69 79Z" fill="currentColor" fill-opacity=".13"/><path d="M52 28L69 35L88 26M69 35V79M56 42L64 45V55L56 52ZM75 49L83 46M75 55L83 52M88 36Q106 34 103 64Q94 72 92 56"/><path d="M52 25L71 16L91 23"/></template>
+ </g></svg></template>

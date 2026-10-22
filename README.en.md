@@ -39,6 +39,22 @@ Each template has its own layout, panels, charts and scene composition.
 - **Data and interactions:** static JSON, HTTP, WebSocket, field mapping, refresh intervals, click/hover events, filtering and drill-down. SQL uses restricted D1 queries in the Worker; connect other databases through your own HTTP gateway.
 - **Portable projects:** IndexedDB storage, undo/redo and local snapshots. Import/export JSON or `.astra.zip` packages containing project assets.
 
+## Scene Studio · Build inside an existing scene
+
+![Scene Studio editor](docs/screenshots/scene-editor.webp)
+
+Choose **场景编辑** in the workspace toolbar, or select a 3D component and choose **进入 3D 场景编辑**. The current city, farm, factory or campus stays in place. New models are saved as objects inside that same dashboard component.
+
+1. Pick from 10 procedural assets: office tower, warehouse, solar array, turbine, charger, robot arm, pump, camera, tree and container. Three single-device GLB presets are also included, alongside custom GLB/glTF upload.
+2. Move, rotate and scale with a gizmo, or click a scene surface to place an object. Use world/local space, snapping, duplicate, visibility, locking, undo/redo and saved initial views. `W / E / R` switch tools; `F` focuses the selection.
+3. Start with eight material presets, then tune color, metalness, roughness, opacity, emissive intensity and holographic scans. Add rotation, float or pulse motion, or play embedded GLB animations.
+4. Attach a label to a model or place a standalone label on a surface. Configure its title, description, status, up to eight information rows, accent color and HTTP/HTTPS detail link. Use **交互预览** to test clicks and popup cards.
+5. **应用并返回** saves the changes to the original component. Model files travel with `.astra.zip` packages; annotations and transforms remain part of projects, snapshots and published configurations.
+
+Each 3D component supports up to 64 added objects. The built-in world remains a base layer; added models and labels are independently editable. Object edits do not rebuild the base world. Popup information fields are configured by the user; component-to-component actions remain available in the interaction inspector.
+
+![Custom annotations and information panels](docs/screenshots/scene-panel.webp)
+
 ## Header Studio
 
 ![Actual Header Studio editor](docs/screenshots/header-studio.webp)
