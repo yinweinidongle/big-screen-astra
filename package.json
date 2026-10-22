@@ -10,24 +10,26 @@
     "dev:server": "wrangler dev --local --config wrangler.local.json --port 8787 --var LOCAL_DEV:true",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply DB --local --config wrangler.local.json",
-    "test": "node scripts/verify-workbench.mjs && node scripts/verify-agent.mjs && node scripts/verify-agent-server.mjs && node scripts/verify-sector-scenes.mjs && node scripts/verify-scene-editor.mjs && node scripts/verify-server.mjs && node scripts/verify-studio.mjs && node scripts/verify-header-bridge.mjs && node scripts/verify-trimming.mjs",
+    "test": "node scripts/verify-workbench.mjs && node scripts/verify-agent.mjs && node scripts/verify-code.mjs && node scripts/verify-agent-server.mjs && node scripts/verify-sector-scenes.mjs && node scripts/verify-scene-editor.mjs && node scripts/verify-server.mjs && node scripts/verify-studio.mjs && node scripts/verify-header-bridge.mjs && node scripts/verify-trimming.mjs",
     "build:pages": "node scripts/build-pages.mjs",
     "preview:pages": "vite preview --outDir dist/pages --host 127.0.0.1"
   },
   "dependencies": {
-    "vue": "^3.5.18",
-    "three": "^0.180.0",
-    "lucide-vue-next": "^0.468.0",
+    "acorn": "^8.19.0",
+    "drizzle-orm": "^0.45.0",
     "echarts": "^6.0.0",
+    "lucide-vue-next": "^0.468.0",
     "mapbox-gl": "^3.16.0",
-    "drizzle-orm": "^0.45.0"
+    "ses": "^2.3.0",
+    "three": "^0.180.0",
+    "vue": "^3.5.18"
   },
   "devDependencies": {
-    "vite": "^7.1.5",
     "@vitejs/plugin-vue": "^6.0.1",
+    "drizzle-kit": "^0.31.10",
     "esbuild": "^0.25.0",
-    "wrangler": "^4.0.0",
-    "drizzle-kit": "^0.31.10"
+    "vite": "^7.1.5",
+    "wrangler": "^4.0.0"
   },
   "description": "Visual dashboard studio with Vue 3, Three.js, ECharts and an SVG header editor",
   "license": "MIT",

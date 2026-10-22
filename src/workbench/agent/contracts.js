@@ -36,6 +36,14 @@ export const agentTools=[
  tool('add_scene_objects','在已有 3D 场景中添加建筑、设备、GLB 或交互标签，保留原场景。GLB 使用已登记 assetId 或内置 modelPreset；标签信息与弹出层一起配置。',obj({id:str('场景组件 ID',100),objects:arr({type:'object',description:'kind:preset|model|label; preset:tower|warehouse|solar|turbine|charger|robot|pump|camera|tree|container; modelPreset:pump|robot|charger; position:[x,y,z]; material:{preset,color,metalness,roughness,opacity,emissive}; label:{title,description,status,rows:[{label,value,unit}]}'},20)},['id','objects']),true),
  tool('update_scene_objects','修改已有场景中的特定模型或标签。保留未提及的材质、标签和基础场景。',obj({id:str('场景 ID',100),updates:arr(obj({objectId:str('场景对象 ID',100),changes:{type:'object'}},['objectId','changes']),32)},['id','updates']),true),
  tool('configure_events','配置图表、列表与 POI 的点击/悬浮联动。目标必须是草稿中的真实组件。',obj({id:str('ID',100),events:arr(obj({on:choice(['click','hover']),action:choice(['filter','refresh','toggle','drill']),target:str('目标 ID 或 *',100),key:str('字段',60),value:str('值或 $name / $value',160)},['on','action','target']),20)},['id','events']),true),
+ tool('get_code_api','读取前端代码工作区、运行入口、Three.js 能力、参数、交互与资源预算。编写代码前先读取，不得臆造 API。',obj({target:choice(['scene','frontend'])},['target'])),
+ tool('list_code_files','列出组件代码文件、行数、版本和可恢复检查点；支持自定义前端组件与现有 3D 场景。',obj({id:str('组件 ID',100)},['id'])),
+ tool('read_code_file','按行读取代码文件以便精确修改，默认返回前 180 行。',obj({id:str('组件 ID',100),path:str('工作区相对文件路径',160),startLine:num(1,10000),endLine:num(1,10000)},['id','path'])),
+ tool('write_code_files','在组件独立工作区原子写入多个前端代码文件：JS / GLSL / JSON / HTML / CSS。代码自行实现用户需求；不要替换为素材预设。写入后必须 run_code 实际编译运行。',obj({id:str('组件 ID',100),files:arr(obj({path:str('相对路径',160),content:str('完整源代码',60000)},['path','content']),20),entry:str('JS 入口路径，默认 main.js',160),mode:choice(['overlay','replace']),parameters:{type:'object',maxProperties:60}},['id','files']),true),
+ tool('edit_code_file','精确替换一个文件中唯一匹配的文本。保留其他代码；不匹配时先重新 read_code_file。修改后 run_code。',obj({id:str('组件 ID',100),path:str('相对路径',160),oldText:str('唯一旧文本',60000),newText:str('替换文本',60000),expectedHash:str('可选的工作区版本约束',30)},['id','path','oldText','newText']),true),
+ tool('delete_code_file','从组件代码工作区删除文件；有检查点可回滚。之后必须重新 run_code 验证引用。',obj({id:str('组件 ID',100),path:str('相对路径',160)},['id','path']),true),
+ tool('run_code','编译和运行当前文件，接回实际画布；返回 JS/GLSL 诊断、运行状态与性能。失败保留上次成功画面，依据具体错误 edit_code_file 后重试。',obj({id:str('组件 ID',100)},['id']),true),
+ tool('restore_code_checkpoint','恢复一个文件检查点，保留其他组件；恢复后 run_code 验证。',obj({id:str('组件 ID',100),checkpointId:str('检查点 ID',100)},['id','checkpointId']),true),
  tool('evaluate_design','渲染当前草稿，读取实际 DOM/3D 性能反馈，检查边界、遮挡、数据、素材、交互与资源预算。必须在完成前调用，依据反馈修正。检查结果是结构/运行证据，不代表视觉审美已经验证。',obj({})),
  tool('repair_layout','对未锁定且在编辑范围内的组件执行确定性修复：纠正越界与错误交互引用；其他问题仍需按评估报告修改。',obj({} ),true)
 ];

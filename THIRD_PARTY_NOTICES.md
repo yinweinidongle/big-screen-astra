@@ -6,6 +6,8 @@ The MIT license in `LICENSE` applies to this project's original code and documen
 | --- | --- |
 | Vue, Vite, @vitejs/plugin-vue | MIT |
 | Three.js and its bundled examples | MIT |
+| Acorn JavaScript parser | MIT |
+| SES / Endo hardened JavaScript runtime | Apache-2.0 |
 | Lucide Vue icons | ISC |
 | Apache ECharts | Apache-2.0 |
 | Drizzle ORM | Apache-2.0 |

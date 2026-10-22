@@ -14,3 +14,5 @@
 .aw-template-explore{display:flex;align-items:center;gap:6px;font-size:10px;color:#78998a;padding:7px 9px;border:1px solid #e3ece6;border-radius:5px}.aw-template-explore>i{font:6px monospace;font-style:normal;color:#78a386;background:#eff5ef;padding:2px 3px;border-radius:2px}.aw-template-explore:hover{background:#f2f7f2}@media(max-width:1050px){.aw-template-explore{display:none}}
 
 .aw-edit-toolbar button.aw-scene-edit-launch{display:flex;align-items:center;gap:5px;width:auto;padding:6px 9px;font-size:10px;background:#edf4f1;color:#5d8879;border:1px solid #d9e7df;border-radius:5px;white-space:nowrap}.aw-scene-editor-entry{margin:10px 0 0!important;justify-content:space-between;color:#5d897b!important;background:#f0f7f3!important;border-color:#d7e7de!important}
+
+.aw-code-edit-launch{display:flex!important;align-items:center;gap:5px;width:auto!important;padding:5px 8px!important;font-size:9px!important;color:#759985!important;background:#f0f6f2!important;border:1px solid #dce9df!important;border-radius:5px}

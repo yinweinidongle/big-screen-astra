@@ -13,7 +13,7 @@ import {renderToString} from 'vue/server-renderer';
 import {pathData,mirrored} from '../src/studio/geometry.js';
 import {trimLinePaths} from '../src/studio/pathTrimming.js';
 import {lineRadius} from '../src/studio/lineEffects.js';
-const server=await createServer({server:{middlewareMode:true},appType:'custom'});
+const server=await createServer({server:{middlewareMode:true},appType:'custom',optimizeDeps:{noDiscovery:true,include:[]}});
 try{
  const {componentSource,makeZip}=await server.ssrLoadModule('/src/studio/export.js');
  for(const preset of presets){

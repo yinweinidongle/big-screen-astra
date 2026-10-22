@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import 'ses';
+import {reactive} from 'vue';
+import {SceneCodeLayer} from '../src/workbench/code/scene-client.js';
+import {createSceneProgram,checkShader} from '../src/workbench/code/scene-core.js';
+import {makeWorkspace,normalizeWorkspace,writeCodeFiles,editCodeFile,codeHash,codePath} from '../src/workbench/code/workspace.js';
+import {bundleCode} from '../src/workbench/code/compiler.js';
+import {frontendDocument} from '../src/workbench/code/frontend.js';
+import {createDesignEngine} from '../src/workbench/agent/engine.js';
+import {makeProject} from '../src/workbench/templates.js';
+import {validateProject} from '../src/workbench/schema.js';
+lockdown({errorTaming:'unsafe',stackFiltering:'verbose'});
+const w=makeWorkspace();writeCodeFiles(w,[{path:'math.js',content:'export const offset = x => x * 2;'}, {path:'surface.frag',content:'uniform float uTime; void main(){gl_FragColor=vec4(0.2+0.1*sin(uTime),0.6,0.8,1.0);}'},{path:'main.js',content:`import {offset} from './math.js';
+import fragmentShader from './surface.frag';
+export function build(THREE,ctx){
+ const root=new THREE.Group();
+ const material=new THREE.ShaderMaterial({uniforms:{uTime:{value:0}},vertexShader:'void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader});
+ const box=new THREE.Mesh(new THREE.BoxGeometry(2,3,4),material);box.position.x=offset(ctx.parameters.x);root.add(box);
+ ctx.label(box,{name:'Generated object',rows:[{label:'Status',value:'Online',unit:''}]});
+ return {root,update(time){box.position.y=Math.sin(time);material.uniforms.uTime.value=time;}};
+}`}]);
+w.parameters={x:3};const p=createSceneProgram(w,{parameters:w.parameters,theme:{accent:'#00ccff'},data:[]},Compartment);assert.equal(p.root.children.length,1);assert.equal(p.root.children[0].position.x,6);assert.equal(p.stats.files,3);const patch=p.update(2,.03);assert(patch.changes.some(c=>Math.abs(c.p[1]-Math.sin(2))<1e-8));assert.equal(patch.materials[0].uniforms.uTime,2);assert.equal(p.json.object.children[0].userData.poi.name,'Generated object');
+const source=text=>({...makeWorkspace(),files:[{path:'main.js',content:text}]});
+for(const text of ['export function build(){while(true){}}','export function build(){return fetch("https://example.com");}','export function build(){return Function("return globalThis")();}','export function build(THREE){return new THREE.Scene();}','export function build(THREE){const r=new THREE.Group();for(let i=0;i<1000;i++)r.add(new THREE.Group());return r;}'])assert.throws(()=>createSceneProgram(source(text),{},Compartment));
+assert.throws(()=>checkShader('void main(){while(true){}}'));assert.throws(()=>checkShader('void main(){for(int i=0;i<1000;i++){} }'));assert.throws(()=>codePath('../escape.js'));assert.throws(()=>bundleCode([{path:'main.js',content:'import x from "https://example.com/x.js"'}]));assert.throws(()=>bundleCode([{path:'main.js',content:'import "./a.js"'},{path:'a.js',content:'import "./main.js"'}]));assert.throws(()=>bundleCode([{path:'main.js',content:'export function broken( {'}]));
+const old=codeHash(w.files);editCodeFile(w,'math.js','x * 2','x * 3');assert.notEqual(codeHash(w.files),old);assert(w.checkpoints.length);assert.throws(()=>editCodeFile(w,'math.js','not found','x'));assert.throws(()=>normalizeWorkspace({...w,files:[{path:'main.js',content:'x'.repeat(60001)}]}));
+const frontend=source('export function mount(root,ctx){root.textContent=ctx.data.length;ctx.onFrame(t=>root.style.opacity=String(.8+.2*Math.sin(t)));}');frontend.files.push({path:'index.html',content:'<div>Custom canvas</div>'},{path:'style.css',content:'div{color:#6ce5c0}'});const html=frontendDocument(frontend,'TEST_NONCE');assert(html.includes('sandbox')===false);assert(html.includes("connect-src 'none'"));assert(html.includes("nonce-TEST_NONCE"));assert(html.includes('__astraStep()'));assert(html.includes('Custom canvas'));
+const project=makeProject('campus'),scene=project.nodes.find(n=>n.type==='scene');const engine=createDesignEngine(project,{inspect:async(p,options)=>{const n=p.nodes.find(n=>n.id===options?.codeNodeId);if(!n)return{};try{const r=createSceneProgram(n.props.codeWorkspace,{parameters:{}},Compartment);return {code:{state:'ready',stats:r.stats}};}catch(e){return {code:{state:'error',message:e.message}};}}});
+let r=await engine.execute('write_code_files',{id:scene.id,files:[{path:'main.js',content:'export function build(THREE){return {root:new THREE.Group()};}'}]});assert(r.ok);assert((await engine.execute('evaluate_design',{})).errors.some(e=>e.code==='code-unrun'));r=await engine.execute('run_code',{id:scene.id});assert(r.ok&&r.rendered);const active=codeHash(engine.project.nodes.find(n=>n.id===scene.id).props.codeWorkspace.activeFiles);await engine.execute('write_code_files',{id:scene.id,files:[{path:'main.js',content:'export function build(){throw Error("BUILD_ERROR");}'}]});r=await engine.execute('run_code',{id:scene.id});assert(!r.ok&&r.error.includes('BUILD_ERROR'));assert.equal(codeHash(engine.project.nodes.find(n=>n.id===scene.id).props.codeWorkspace.activeFiles),active,'Failed build must preserve last active code');const validated=validateProject(engine.project);assert(validated.nodes.find(n=>n.id===scene.id).props.codeWorkspace.files[0].content.includes('BUILD_ERROR'));
+console.log('Code workspaces: actual SES execution, JS/GLSL modules, animation patches, scope-safe file tools, diagnostics, checkpoints, execution budgets, denied network/global access, isolated frontend document and failed-build rollback passed.');
+
+let posted;const entry={pending:false,worker:{postMessage:value=>{posted=structuredClone(value);}}};SceneCodeLayer.prototype.event.call({active:entry,generation:1,fail(){assert.fail('Event dispatch must accept reactive POI rows');}},reactive({kind:'click',poi:{rows:[{label:'State',value:'Online'}]}}));clearTimeout(entry.timer);assert.equal(posted.event.poi.rows[0].value,'Online');assert.deepEqual(p.event({kind:'click'}).changes,[]);console.log('Code interactions: reactive POI payload cloning and optional event handlers passed.');

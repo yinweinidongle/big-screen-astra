@@ -1,4 +1,4 @@
-import {createDesignEngine,projectContext,redactForModel} from './engine.js';
+import {createDesignEngine,evaluateProject,projectContext,redactForModel} from './engine.js';
 import {agentTools} from './contracts.js';
 export async function agentRequest(path,body,signal){const r=await fetch('/api/agent/'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{}),signal});let data;try{data=await r.json()}catch{throw Error('智能体接口不可用，请使用已部署 Worker 的完整服务版');}if(!r.ok){const e=new Error(data.error||'智能体请求失败');e.status=r.status;e.code=data.code;throw e;}return data;}
 export function inspectCanvas(project,root=document.querySelector('.aw-canvas-viewport')){
@@ -6,6 +6,7 @@ export function inspectCanvas(project,root=document.querySelector('.aw-canvas-vi
  for(const el of root?.querySelectorAll('[data-node-id]')||[]){const node=byId.get(el.dataset.nodeId);if(!node?.visible)continue;
  for(const text of el.querySelectorAll('.aw-panel-title strong,.aw-number-caption,.aw-text'))if(text.clientWidth>0&&text.scrollWidth>text.clientWidth+4)issues.push({code:'text-overflow',severity:'warning',nodeId:node.id,message:node.name+' 的文字可能截断，请减少字数或字号'});
  const error=el.querySelector('.aw-data-error');if(error)issues.push({severity:'warning',code:'data-runtime',nodeId:node.id,message:node.name+'：'+error.textContent.slice(0,160)});
+ const code=el.querySelector('[data-code-state]');if(code?.dataset.codeState==='error')issues.push({severity:'error',code:'code-runtime',nodeId:node.id,message:node.name+'：'+(code.dataset.codeError||'代码运行失败').slice(0,1800)});
  const state=el.querySelector('.aw-scene-state');if(state){const failed=state.textContent.includes('失败')||state.textContent.includes('错误');issues.push({severity:failed?'error':'warning',code:failed?'scene-error':'scene-loading',nodeId:node.id,message:node.name+'：'+state.textContent.trim().slice(0,160)});}
  for(const canvas of el.querySelectorAll('canvas')){if(!canvas.width||!canvas.height)issues.push({code:'canvas-size',severity:'warning',nodeId:node.id,message:node.name+' 画布尚未准备好'});if(canvas.dataset.fps){const fps=Number(canvas.dataset.fps),drawCalls=Number(canvas.dataset.drawCalls||0),triangles=Number(canvas.dataset.triangles||0);scenes.push({nodeId:node.id,fps,drawCalls,triangles});if(fps>0&&fps<24)issues.push({code:'fps',severity:'warning',nodeId:node.id,message:node.name+' 实测帧率较低，建议降低阴影和模型复杂度'});}}
  }
@@ -14,7 +15,7 @@ export function inspectCanvas(project,root=document.querySelector('.aw-canvas-vi
 const sleep=(ms,signal)=>new Promise((resolve,reject)=>{if(signal?.aborted)return reject(new DOMException('Aborted','AbortError'));const done=()=>{signal?.removeEventListener('abort',abort);resolve();},timer=setTimeout(done,ms),abort=()=>{clearTimeout(timer);reject(new DOMException('Aborted','AbortError'));};signal?.addEventListener('abort',abort,{once:true});});
 export async function runDesignAgent({project,selectedIds,mode='auto',scope='all',prompt,profileId,model,signal,history=[],onEvent=()=>{},onDraft=async()=>{},inspect=async()=>({}),request=agentRequest,maxRounds=16}){
  const engine=createDesignEngine(project,{mode,scope,selectedIds,onChange:async p=>{await onDraft(p);},inspect});const messages=[{role:'user',content:JSON.stringify({request:prompt,mode,scope,selectedIds,previousConversation:history.slice(-4).map(m=>({role:m.role,content:m.content.slice(0,1500)})),canvas:{id:project.id,name:project.name,width:project.width,height:project.height},instruction:'先读取 get_project_context，再用 plan_design 自动判断新建/优化和编辑范围。用户无需选择。默认保留现有作品，只有明确新建、另做作品或空画布时创建独立新草稿。'})}];
- let tokens={input:0,output:0},repairs=0,forced=0,lastText='',requestCount=0;const receipts=new Map(),started=Date.now();
+ const baselineWarnings=new Set(evaluateProject(project).warnings.map(w=>JSON.stringify([w.code,w.nodeId,w.message])));let deliverySummary='';let tokens={input:0,output:0},repairs=0,forced=0,lastText='',requestCount=0;const receipts=new Map(),started=Date.now();
  onEvent({type:'stage',stage:'planning',label:'理解需求与设计规划'});
  try{for(let round=0;round<maxRounds;round++){
  if(signal?.aborted)throw new DOMException('Aborted','AbortError');if(Date.now()-started>480000)throw Error('本轮已达到 8 分钟执行预算，已保留完成的草稿');
@@ -29,18 +30,20 @@ export async function runDesignAgent({project,selectedIds,mode='auto',scope='all
  onEvent({type:'tool-start',id,name,args:redactForModel(args)});
  if(receipts.has(id))result=receipts.get(id);else{if(name==='evaluate_design')onEvent({type:'stage',stage:'evaluating',label:'评估布局、数据与运行状态'});result=result||await engine.execute(name,args);receipts.set(id,result);}
  if(name==='plan_design'&&result.ok)onEvent({type:'brief',brief:engine.brief});if(name==='evaluate_design'&&result.ok)onEvent({type:'evaluation',report:result});
- onEvent({type:'tool-result',id,name,ok:result.ok,result:redactForModel(result),duration:Math.round(performance.now()-start)});messages.push({role:'tool',tool_call_id:id,content:JSON.stringify(redactForModel(result))});
+ const safeResult=redactForModel(result,0,name==='read_code_file'?16000:4000);onEvent({type:'tool-result',id,name,ok:result.ok,result:safeResult,duration:Math.round(performance.now()-start)});messages.push({role:'tool',tool_call_id:id,content:JSON.stringify(safeResult)});
  }
  continue;
  }
  if(!engine.modified){if(++forced>1)throw Error('模型没有执行有效设计修改。可换一个支持工具调用的模型后重试。');messages.push({role:'user',content:'请实际执行设计器工具，完成用户要求；不能仅提供设计建议。'});continue;}
  let report=engine.report;
  if(!report){onEvent({type:'stage',stage:'evaluating',label:'检查草稿交付质量'});report=await engine.execute('evaluate_design',{});onEvent({type:'evaluation',report});}
- const actionable=report.errors.length||report.warnings.some(w=>['bounds','overlap','field','text-overflow','title','fps','asset','scene-error','unit-mismatch'].includes(w.code));
- if(actionable&&repairs<2){repairs++;onEvent({type:'stage',stage:'repairing',label:'依据评估反馈修正 · '+repairs+'/2'});messages.push({role:'user',content:'交付检查发现以下问题，请只修复这些问题并再次 evaluate_design。必须尊重编辑范围和锁定对象。'+JSON.stringify(report)});continue;}
+ if(!deliverySummary)deliverySummary=lastText;const actionable=report.errors.length||report.warnings.some(w=>!baselineWarnings.has(JSON.stringify([w.code,w.nodeId,w.message]))&&['bounds','overlap','field','text-overflow','title','fps','asset','scene-error','unit-mismatch'].includes(w.code));
+ if(actionable&&repairs<2){repairs++;onEvent({type:'stage',stage:'repairing',label:'依据评估反馈修正 · '+repairs+'/2'});messages.push({role:'user',content:'交付检查发现新问题，请修复后再次 evaluate_design。必须尊重编辑范围和锁定对象，不要改动用户要求保留的无关内容。无法处理的提醒保留并解释。最终说明必须汇总本次任务所有已经完成的工作，不能把最后一轮没有新增修改误说成整个任务没有修改，也不要要求用户选择才能交付已经完成的草稿。'+JSON.stringify(report)});continue;}
  onEvent({type:'stage',stage:'complete',label:report.errors.length?'草稿已保留，仍有问题待修正':'设计已完成，可以预览应用'});
- return {project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,summary:lastText,modified:true,tokens,rounds:round+1,requestCount,repairs};
+ return {project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,summary:repairs&&deliverySummary&&deliverySummary!==lastText?deliverySummary+'\n\n**最后一轮检查说明**\n'+lastText:lastText,modified:true,tokens,rounds:round+1,requestCount,repairs};
  }
  throw Error('已达到本轮工具调用上限，已保留完成的草稿；可继续提出局部修改');
  }catch(error){if(engine.modified){await onDraft(engine.project);const report=await engine.execute('evaluate_design',{});onEvent({type:'evaluation',report});error.partial={project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,modified:true,tokens,summary:signal?.aborted?'已停止，完成的部分已保留':error.message};}throw error;}
 }
+
+export async function waitForCode({codeNodeId,hash},signal){const start=performance.now();while(performance.now()-start<14000){if(signal?.aborted)throw new DOMException('Aborted','AbortError');const node=[...document.querySelectorAll('[data-node-id]')].find(el=>el.dataset.nodeId===codeNodeId),el=node?.querySelector('[data-code-state]');if(el?.dataset.codeHash===hash){if(el.dataset.codeState==='error')return {code:{state:'error',message:el.dataset.codeError}};if(el.dataset.codeState==='ready'){let stats={};try{stats=JSON.parse(el.dataset.codeStats||'{}')}catch{}return {code:{state:'ready',stats,diagnostics:[]}};}}await sleep(80,signal);}return {code:{state:'error',message:'等待代码实际编译运行超时，请减少构建复杂度后重试'}};}

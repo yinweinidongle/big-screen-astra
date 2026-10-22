@@ -24,7 +24,7 @@ const writes=[];globalThis.localStorage={getItem:()=>JSON.stringify(makeConfig(p
 let studio;const renderer=createRenderer({createElement:()=>({}),insert(){},remove(){},createText:()=>({}),createComment:()=>({}),setText(){},setElementText(){},parentNode(){},nextSibling(){},patchProp(){}});
 const app=renderer.createApp({setup(){studio=useStudio({initialConfig:node.props.headerConfig,persist:false,preserveContent:true});return()=>h('div');}});app.mount({});
 assert.equal(studio.config.value.title,node.props.headerConfig.title,'Embedded editor must ignore standalone draft');studio.config.value.title='未提交输入';assert(studio.canUndo.value);studio.undo();assert.equal(studio.config.value.title,node.props.headerConfig.title);studio.redo();assert.equal(studio.config.value.title,'未提交输入');studio.choosePreset(presets[3]);assert.equal(studio.config.value.title,'未提交输入');await nextTick();app.unmount();assert.equal(writes.length,0,'Embedded editor must not overwrite standalone localStorage draft');
-const server=await createServer({server:{middlewareMode:true},appType:'custom'});
+const server=await createServer({server:{middlewareMode:true},appType:'custom',optimizeDeps:{noDiscovery:true,include:[]}});
 const exportedFile=new URL('../src/__verify_header_bridge.vue',import.meta.url);
 try{
  const {componentSource}=await server.ssrLoadModule('/src/studio/export.js');
