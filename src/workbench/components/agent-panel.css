@@ -10,3 +10,5 @@
 @media(max-width:1100px){.astra-workbench.agent-open .aw-workspace{grid-template-columns:var(--rail-width) minmax(0,1fr)}.astra-workbench.agent-open .aw-library{display:none}}
 
 @media(max-height:700px){.aa-heading{height:58px;flex-basis:58px}.aa-tabs{height:40px;flex-basis:40px}.aa-content{padding-top:16px;padding-bottom:16px}.aa-composer{padding:10px 16px}.aa-prompt-box{padding:9px}.aa-prompt-box textarea{height:54px;min-height:54px}.aa-composer>small{margin-top:6px}.aa-compose-options{margin-bottom:8px}}
+
+.aa-compose-options>.aa-auto-intent{margin-left:0;color:#7d9b87;font-size:9px}.aa-compose-options>.aa-selection-context{margin-left:2px;color:#91a89b;font-size:8px}.aa-intent-result{display:flex;align-items:center;gap:5px;margin-top:12px;font-size:10px;color:#5e896e}.aa-intent-result small{margin-left:auto;font-size:8px;color:#9caf9f}

@@ -12,8 +12,8 @@ export function inspectCanvas(project,root=document.querySelector('.aw-canvas-vi
  return {issues,metrics:{sceneTelemetry:scenes,renderChecked:!!root,measuredAt:Date.now()}};
 }
 const sleep=(ms,signal)=>new Promise((resolve,reject)=>{if(signal?.aborted)return reject(new DOMException('Aborted','AbortError'));const done=()=>{signal?.removeEventListener('abort',abort);resolve();},timer=setTimeout(done,ms),abort=()=>{clearTimeout(timer);reject(new DOMException('Aborted','AbortError'));};signal?.addEventListener('abort',abort,{once:true});});
-export async function runDesignAgent({project,selectedIds,mode='refine',scope='all',prompt,profileId,model,signal,history=[],onEvent=()=>{},onDraft=async()=>{},inspect=async()=>({}),request=agentRequest,maxRounds=16}){
- const engine=createDesignEngine(project,{mode,scope,selectedIds,onChange:async p=>{await onDraft(p);},inspect});const messages=[{role:'user',content:JSON.stringify({request:prompt,mode,scope,selectedIds,previousConversation:history.slice(-4).map(m=>({role:m.role,content:m.content.slice(0,1500)})),canvas:{id:project.id,name:project.name,width:project.width,height:project.height},instruction:'先调用 get_project_context 获取实际组件 ID 与能力清单'})}];
+export async function runDesignAgent({project,selectedIds,mode='auto',scope='all',prompt,profileId,model,signal,history=[],onEvent=()=>{},onDraft=async()=>{},inspect=async()=>({}),request=agentRequest,maxRounds=16}){
+ const engine=createDesignEngine(project,{mode,scope,selectedIds,onChange:async p=>{await onDraft(p);},inspect});const messages=[{role:'user',content:JSON.stringify({request:prompt,mode,scope,selectedIds,previousConversation:history.slice(-4).map(m=>({role:m.role,content:m.content.slice(0,1500)})),canvas:{id:project.id,name:project.name,width:project.width,height:project.height},instruction:'先读取 get_project_context，再用 plan_design 自动判断新建/优化和编辑范围。用户无需选择。默认保留现有作品，只有明确新建、另做作品或空画布时创建独立新草稿。'})}];
  let tokens={input:0,output:0},repairs=0,forced=0,lastText='',requestCount=0;const receipts=new Map(),started=Date.now();
  onEvent({type:'stage',stage:'planning',label:'理解需求与设计规划'});
  try{for(let round=0;round<maxRounds;round++){
@@ -39,8 +39,8 @@ export async function runDesignAgent({project,selectedIds,mode='refine',scope='a
  const actionable=report.errors.length||report.warnings.some(w=>['bounds','overlap','field','text-overflow','title','fps','asset','scene-error','unit-mismatch'].includes(w.code));
  if(actionable&&repairs<2){repairs++;onEvent({type:'stage',stage:'repairing',label:'依据评估反馈修正 · '+repairs+'/2'});messages.push({role:'user',content:'交付检查发现以下问题，请只修复这些问题并再次 evaluate_design。必须尊重编辑范围和锁定对象。'+JSON.stringify(report)});continue;}
  onEvent({type:'stage',stage:'complete',label:report.errors.length?'草稿已保留，仍有问题待修正':'设计已完成，可以预览应用'});
- return {project:engine.project,brief:engine.brief,report,summary:lastText,modified:true,tokens,rounds:round+1,requestCount,repairs};
+ return {project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,summary:lastText,modified:true,tokens,rounds:round+1,requestCount,repairs};
  }
  throw Error('已达到本轮工具调用上限，已保留完成的草稿；可继续提出局部修改');
- }catch(error){if(engine.modified){await onDraft(engine.project);const report=await engine.execute('evaluate_design',{});onEvent({type:'evaluation',report});error.partial={project:engine.project,brief:engine.brief,report,modified:true,tokens,summary:signal?.aborted?'已停止，完成的部分已保留':error.message};}throw error;}
+ }catch(error){if(engine.modified){await onDraft(engine.project);const report=await engine.execute('evaluate_design',{});onEvent({type:'evaluation',report});error.partial={project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,modified:true,tokens,summary:signal?.aborted?'已停止，完成的部分已保留':error.message};}throw error;}
 }

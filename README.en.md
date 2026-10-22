@@ -59,7 +59,7 @@ Each 3D component supports up to 64 added objects. The built-in world remains a 
 
 ![Actual tool execution and delivery checks](docs/screenshots/agent-copilot.webp)
 
-Open **智能创作** to describe your business, visual direction, metrics and scene. The agent uses **18 native tools** to create editable dashboards or refine the current screen / selected components, including headers, charts, existing 3D scenes, materials and interactive annotations.
+Open **智能创作** to describe your business, visual direction, metrics and scene. The model automatically decides whether to create a new dashboard or refine the current one from your request and canvas context; no manual mode switch is needed. The agent uses **18 native tools** to create editable dashboards or refine the current screen / selected components, including headers, charts, existing 3D scenes, materials and interactive annotations.
 
 - **Execute → feedback → evaluate → repair**: inspect real arguments, results, timings and failures. Checks include DOM rendering, text overflow, bounds, data fields, interaction references and Three.js telemetry, with limits of 16 model rounds and 2 repair rounds.
 - **Preview before applying**: compare a separate draft with the original, then apply as one undoable edit. Selection scope, locked objects and manual-edit conflicts are enforced. Completed drafts can recover after refresh; stopping preserves completed work.
