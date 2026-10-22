@@ -1,4 +1,6 @@
 <script setup>
+import {sitePath} from '../paths.js';
+
 import {computed,ref} from 'vue';import {Factory,Activity,Box,Settings2,Zap,ShieldCheck,Expand,Plus,Minus,RotateCcw,Play,Pause,ChevronRight,ArrowUpRight,ArrowDownRight,TriangleAlert,Check,ScanLine,Layers,Radio,X,Clock,Workflow} from 'lucide-vue-next';
 import SvgFlowRails from '../components/SvgFlowRails.vue';
 import SceneViewport from './components/SceneViewport.vue';import MiniChart from './components/MiniChart.vue';import {useDashboard} from './useDashboard';import './shared.css';import './industry.css';
@@ -13,13 +15,13 @@ function selectLine(id){selectedLine.value=id;selected.value={name:id==='01'?'01
 <div class="demo-app industry-app">
 <header class="industrial-header">
  <svg class="industrial-header-art" viewBox="0 105 2172 505" preserveAspectRatio="none" aria-hidden="true">
-  <image href="/assets/industry-header.png" width="2172" height="724" opacity=".68"/>
+  <image :href="sitePath('/assets/industry-header.png')" width="2172" height="724" opacity=".68"/>
   <SvgFlowRails :paths="['M0 498H366L426 550H655L711 606','M2172 205H1880L1824 183H1620']" :nodes="[[366,498],[1880,205],[655,550],[1620,183]]" color="#ffda96" :duration="6"/>
   <SvgFlowRails :paths="['M0 517H350L411 570H624','M2172 225H1889L1834 203H1651']" color="#d99546" :duration="6" :secondary="true"/>
   <g stroke="#e3a55e" fill="none" opacity=".55" stroke-width=".8"><path d="M753 606H909M941 606H990M1182 606H1231M1263 606H1419" vector-effect="non-scaling-stroke"/><path d="M1062 587L1086 599L1110 587"/></g>
   <g class="industry-core-pulse" fill="#eeb97b"><rect v-for="i in 7" :key="i" :x="1022+i*14" y="600" width="7" height="5" :opacity="i===4?1:.5"/></g>
  </svg>
- <a class="industrial-brand" href="/demo02"><span><Factory :size="24" :stroke-width="1.4"/></span><div><strong>NEXUS<span>工业智能</span></strong><small>INDUSTRIAL INTELLIGENCE PLATFORM</small></div></a>
+ <a class="industrial-brand" :href="sitePath('/demo02')"><span><Factory :size="24" :stroke-width="1.4"/></span><div><strong>NEXUS<span>工业智能</span></strong><small>INDUSTRIAL INTELLIGENCE PLATFORM</small></div></a>
  <div class="industrial-title"><span>MANUFACTURING / COMMAND CENTER</span><h1>智慧工业数字运营中心<span>↗</span></h1><p>精益制造 · 全链协同 · 数字驱动</p></div>
  <div class="industrial-head-status"><div><i class="live-led"></i> FACTORY ONLINE</div><time class="num">{{time}}</time><span>{{date}} <button @click="full" aria-label="切换全屏"><Expand :size="14"/></button></span></div>
 </header>
@@ -47,6 +49,6 @@ function selectLine(id){selectedLine.value=id;selected.value={name:id==='01'?'01
   <section class="industrial-panel industrial-alerts"><div class="industrial-panel-heading"><h2>事件与预警 <b>{{alertRead?'00':'01'}}</b></h2><button @click="alertRead=true;notify('全部预警已确认')">全部确认 <ChevronRight :size="11"/></button></div><button class="industrial-alert" :class="{resolved:alertRead}" @click="alertRead=true;notify('CNC-06 维护提醒已确认')"><TriangleAlert :size="16"/><div><strong>{{alertRead?'CNC-06 维护提醒已确认':'CNC-06 预防性维护提醒'}}</strong><p>建议在下次停机窗口完成主轴保养</p><time>14:32:08 <span>{{alertRead?'已确认':'待确认'}}</span></time></div></button><div class="industrial-log"><span></span><div><strong>装配线 A 质检批次通过</strong><p>1,280 件产品完成全检</p><time>14:28:42</time></div><Check :size="13"/></div><div class="industrial-log"><span></span><div><strong>AGV-03 完成物料配送</strong><p>仓储区 → 自动装配线</p><time>14:26:16</time></div><Check :size="13"/></div></section>
  </aside>
 </main>
-<footer class="demo-footer"><div><i class="live-led"></i> 系统运行正常 <span class="industrial-footer-separator">/</span> MES · ERP · SCADA 已连接</div><nav aria-label="切换大屏"><a href="/">智慧城市</a><a href="/demo01">智慧农业</a><a href="/demo02" class="current">智慧工业</a><a href="/demo03/">智慧园区 ↗</a></nav><div><span class="demo-note">演示数据</span><span>LATENCY <b class="num">18</b> ms</span><Radio :size="12"/></div></footer><div v-if="toast" class="demo-toast" role="status">{{toast}}</div>
+<footer class="demo-footer"><div><i class="live-led"></i> 系统运行正常 <span class="industrial-footer-separator">/</span> MES · ERP · SCADA 已连接</div><nav aria-label="切换大屏"><a :href="sitePath('/')">智慧城市</a><a :href="sitePath('/demo01')">智慧农业</a><a :href="sitePath('/demo02')" class="current">智慧工业</a><a :href="sitePath('/demo03/')">智慧园区 ↗</a></nav><div><span class="demo-note">演示数据</span><span>LATENCY <b class="num">18</b> ms</span><Radio :size="12"/></div></footer><div v-if="toast" class="demo-toast" role="status">{{toast}}</div>
 </div>
 </template>

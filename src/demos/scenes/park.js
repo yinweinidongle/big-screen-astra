@@ -1,4 +1,4 @@
-import {THREE,box,cylinder,standard,glow,line,label,batchStatic} from './shared.js';
+import {THREE,box,cylinder,standard,glow,line,label,batchStatic,batchLines} from './shared.js';
 export function buildPark(scene){
  const root=new THREE.Group();scene.add(root);const buildings=new THREE.Group(),energy=new THREE.Group(),security=new THREE.Group();root.add(buildings,energy,security);
  const base=standard('#151b37'),road=standard('#222b47'),glass=standard('#697ab0',{metalness:.75,roughness:.22}),white=standard('#b6c9e8',{metalness:.4}),violet=glow('#aa92ff'),cyan=glow('#70eaff'),green=standard('#325f64');
@@ -17,5 +17,6 @@ export function buildPark(scene){
  line(root,[[-17,.2,-13],[17,.2,-13],[17,.2,13],[-17,.2,13],[-17,.2,-13]],'#8178ff',.8);
  const cars=[];for(let i=0;i<7;i++){const car=new THREE.Group();box(car,0,.3,0,.7,.35,1.2,i%2?white:violet);box(car,0,.5,0,.5,.15,.6,glass);root.add(car);cars.push(car)}
  batchStatic(buildings);batchStatic(energy);batchStatic(security);batchStatic(root,[buildings,energy,security,scan,...cars]);
- return {root,home:[36,31,42],target:[0,1,0],labels:[label('01 · 科创总部',[5,11,-4],'科创总部 · 入驻企业 42 家 · 使用率 96.2% · 设备运行正常'),label('02 · 研发中心',[-6,8,-4],'研发中心 · 在园人员 1,286 人 · 环境温度 24.6°C'),label('03 · 活力中心',[6,6,5],'活力中心 · 今日客流 2,408 人 · 停车余位 128 个')],setLayer(v){energy.visible=v!=='security';security.visible=v!=='energy';buildings.children.forEach(o=>{if(o.material?.color)o.material.opacity=1})},update(t,running=true){if(!running)return;scan.material.uniforms.time.value=t;cars.forEach((c,i)=>{const p=(t*1.7+i*10)%88;c.position.set(p<28?-14+p:p<44?14:p<72?14-(p-44):-14,0,p<28?-8:p<44?-8+p-28:p<72?8:8-(p-72));c.rotation.y=p<28||p>=44&&p<72?Math.PI/2:0})}};
+ batchLines(root,[buildings,energy,security,scan,...cars]);
+ return {root,parts:{buildings,energy,security,cars,towers},home:[36,31,42],target:[0,1,0],labels:[label('01 · 科创总部',[5,11,-4],'科创总部 · 入驻企业 42 家 · 使用率 96.2% · 设备运行正常'),label('02 · 研发中心',[-6,8,-4],'研发中心 · 在园人员 1,286 人 · 环境温度 24.6°C'),label('03 · 活力中心',[6,6,5],'活力中心 · 今日客流 2,408 人 · 停车余位 128 个')],setLayer(v){energy.visible=v!=='security';security.visible=v!=='energy';buildings.children.forEach(o=>{if(o.material?.color)o.material.opacity=1})},update(t,running=true){if(!running)return;scan.material.uniforms.time.value=t;cars.forEach((c,i)=>{const p=(t*1.7+i*10)%88;c.position.set(p<28?-14+p:p<44?14:p<72?14-(p-44):-14,0,p<28?-8:p<44?-8+p-28:p<72?8:8-(p-72));c.rotation.y=p<28||p>=44&&p<72?Math.PI/2:0})}};
 }

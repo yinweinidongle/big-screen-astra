@@ -73,3 +73,5 @@
 .dashboard .panel:hover,.dashboard .panel:focus-within{border-color:transparent;box-shadow:0 6px 20px #0003,inset 0 0 28px #6fb4cf08}
 .dashboard .panel-heading{margin-left:3px;margin-right:3px}
 @keyframes city-optical-pass{0%,30%{left:-80px;opacity:0}38%,65%{opacity:.65}78%,100%{left:100%;opacity:0}}
+
+.dashboard .studio-launch{display:inline-flex;align-items:center;gap:5px;margin-left:8px;padding:4px 8px;border:1px solid #659fa92b;color:#83aebb;font-size:10px;text-decoration:none;white-space:nowrap;border-radius:3px}.dashboard .studio-launch:hover{color:#c3f3f0;background:#5b9ba514}.dashboard .studio-launch>span{font-size:11px;color:#6d9caa}@media(max-width:620px){.dashboard .studio-launch{font-size:8px;padding:3px 5px;margin-left:3px}}

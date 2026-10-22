@@ -1,0 +1,32 @@
+import {sitePath} from '../paths.js';
+export const themes=[
+ {id:'midnight',name:'深海青',bg:'#06141f',panel:'#0d2330',accent:'#6ce5c0',text:'#d8eced',muted:'#6f929d',palette:['#65dfbf','#638ff2','#dbc184','#917bd5','#50b4ca']},
+ {id:'glacier',name:'冰川蓝',bg:'#081426',panel:'#0d223c',accent:'#79c9ff',text:'#deedff',muted:'#7893b6',palette:['#79c9ff','#698bff','#5ee2d1','#aa92f3','#d4c99b']},
+ {id:'violet',name:'星云紫',bg:'#100e26',panel:'#201a3c',accent:'#b7a2ff',text:'#eee5ff',muted:'#9488b0',palette:['#b7a2ff','#7f9dff','#e0a6dc','#73d1d0','#dac590']},
+ {id:'amber',name:'钛金橙',bg:'#14171b',panel:'#252a30',accent:'#e8b875',text:'#f2e9db',muted:'#a2998c',palette:['#e8b875','#b18f6f','#83b4b4','#9caa83','#ac97bd']},
+ {id:'jade',name:'墨玉绿',bg:'#071b18',panel:'#102f28',accent:'#a3d9af',text:'#e4f0df',muted:'#7eaa94',palette:['#a3d9af','#d1c28d','#56aa96','#80aebb','#b0a9d0']},
+ {id:'paper',name:'云雾白',bg:'#eef2f5',panel:'#ffffff',accent:'#267c72',text:'#263c49',muted:'#8b9ca4',palette:['#448f84','#5d81bf','#b59257','#a18abb','#5d9ead']}
+];
+export const borderStyles=[{id:'glass',name:'微光玻璃'},{id:'corners',name:'四角定位'},{id:'sweep',name:'流光边框'},{id:'orbit',name:'环绕光束'},{id:'line',name:'极简线框'},{id:'gradient',name:'渐变描边'},{id:'solid',name:'纯色面板'},{id:'none',name:'无边框'}];
+export const backgroundStyles=[{id:'mesh',name:'连线粒子'},{id:'stars',name:'星空粒子'},{id:'bokeh',name:'柔光光斑'},{id:'grid',name:'空间网格'},{id:'lines',name:'几何光线'},{id:'plain',name:'纯净底色'}];
+const item=(type,name,category,icon,description,extra={})=>({type,name,category,icon,description,...extra});
+export const catalog=[
+ item('number','翻动指标','基础','Hash','有节奏的数字翻动与趋势变化'),item('text','文字标题','基础','Type','标题、正文与渐变文字'),item('clock','数字时钟','基础','Clock3','日期、时间与时区'),item('progress','进度环','基础','CircleGauge','目标进度与完成度'),
+ item('line','趋势折线','图表','ChartNoAxesCombined','平滑折线与多系列趋势'),item('area','面积趋势','图表','ChartArea','层次透明的渐变面积'),item('bar','对比柱状','图表','ChartColumn','清晰呈现类别对比'),item('hbar','横向条形','图表','ChartBar','排名与分类统计'),item('stack','堆叠柱状','图表','ChartColumnStacked','结构与总量同时呈现'),item('donut','环形占比','图表','ChartPie','带中央指标的占比图'),item('pie','玫瑰饼图','图表','ChartPie','玫瑰面积映射'),item('radar','能力雷达','图表','Radar','多维度综合评价'),item('gauge','仪表盘','图表','Gauge','运行状态与阈值'),item('scatter','气泡散点','图表','ScatterChart','发现数据分布与关联'),item('heatmap','矩阵热力','图表','Grid3X3','多维热度分布'),item('funnel','转化漏斗','图表','Filter','业务环节转化'),item('treemap','矩形树图','图表','PanelsTopLeft','层级面积与结构'),item('sankey','流向桑基','图表','Workflow','资源流向与去向'),
+ item('table','轮播列表','信息','List','支持自动滚动与悬停暂停'),item('ranking','动态排名','信息','ListOrdered','数值排名与比例条'),item('header','科技 Header','装饰','PanelTop','12 款文生图背景与 SVG 流光'),item('decoration','科技装饰','装饰','Sparkles','流光分隔、扫描环与定位角'),item('image','图片素材','媒体','Image','上传图片与背景装饰'),item('video','背景视频','媒体','Video','静音循环与封面'),item('svg','SVG 图标','媒体','Shapes','安全 SVG 与图形素材'),
+ item('scene','数字孪生场景','空间','Building2','真实 Three.js 城市、园区与产线'),item('globe','智慧地球','空间','Globe2','三维地球、城市光点与飞线'),item('map','3D 地图','空间','Map','建筑白模、DEM 地形与定点聚焦'),item('model','3D 模型','空间','Box','GLB / glTF、材质、动画与 POI')
+];
+export const chartTypes=catalog.filter(c=>c.category==='图表').map(c=>c.type);
+export const chartData=[{name:'00:00',value:126,secondary:86},{name:'04:00',value:182,secondary:118},{name:'08:00',value:145,secondary:109},{name:'12:00',value:248,secondary:176},{name:'16:00',value:205,secondary:142},{name:'20:00',value:318,secondary:224},{name:'24:00',value:276,secondary:198}];
+export const categoryData=[{name:'城市治理',value:420},{name:'交通出行',value:320},{name:'公共服务',value:260},{name:'生态环境',value:180}];
+export const listData=[{name:'黄浦江滨江片区',value:98.6,status:'运行正常',time:'14:32:08'},{name:'陆家嘴金融城区',value:96.2,status:'运行正常',time:'14:31:46'},{name:'张江科学城片区',value:94.8,status:'待复核',time:'14:30:12'},{name:'临港新城示范区',value:97.3,status:'运行正常',time:'14:29:55'},{name:'虹桥综合交通枢纽',value:92.5,status:'运行正常',time:'14:28:17'}];
+export const id=()=>crypto.randomUUID();
+export function createNode(type,extra={}){
+ const entry=catalog.find(c=>c.type===type)||catalog[0],isChart=chartTypes.includes(type);
+ const rows=['table','ranking'].includes(type)?listData:['donut','pie','hbar','radar','treemap','funnel','sankey'].includes(type)?categoryData:chartData;
+ return {id:id(),type,name:entry.name,x:120,y:180,w:['scene','globe','map','model'].includes(type)?800:type==='header'?1920:400,h:type==='number'?110:type==='text'?70:type==='header'?180:300,rotation:0,locked:false,visible:true,group:null,
+  style:{skin:'default',background:true,texture:'none',backgroundImage:'',border:type==='number'?'none':'glass',radius:10,opacity:1,padding:22,fontFamily:'sans-serif',fontSize:type==='text'?30:14,fontWeight:500,color:'',accent:'',gradient:false,gradientTo:'#79a5f0',shadow:0,bgOpacity:65,glow:0},
+  props:{title:entry.name,subtitle:isChart?'实时运行 · 近 24 小时':'',showTitle:!['header','text','number','decoration','image','video','svg','scene','globe','map','model'].includes(type),value:type==='progress'?78:36892,unit:type==='number'?'个':'%',decimals:0,compact:false,flip:true,prefix:'',trend:2.8,seriesName:'今日',secondaryName:'昨日',smooth:true,legend:true,grid:true,chartDesign:'default',centerLabel:'',centerValue:'',chartPalette:'theme',preset:'aurora',text:'全域感知，让城市更有温度',align:'left',interval:3,rows:5,autoScroll:true,variant:'city',sceneStyle:'default',showHUD:false,sceneTitle:'数字孪生场景',sceneCode:'DIGITAL TWIN / LIVE',sceneNote:'点击场景标签查看详情',fov:38,autoRotate:false,rotateSpeed:.35,energy:true,shader:true,material:type==='model'?'original':'glass',ambient:2,directional:3,exposure:1.12,reflectionIntensity:.6,shadows:true,adaptiveQuality:true,terrain:0,quality:'balanced',modelScale:1,modelSpin:false,modelAnimation:true,showPOI:true,poi:[{id:'poi-1',name:'运营中心',x:0,y:10,z:0,value:98.6,unit:'运行指数'}],camera:type==='globe'?[25,12,34]:[42,34,46],target:type==='globe'?[0,0,0]:[0,3,0],url:type==='model'?sitePath('/assets/factory-sample.glb'):'',assetId:'',mapToken:'',mapStyle:'mapbox://styles/mapbox/dark-v11',lng:121.49,lat:31.23,zoom:15.2,pitch:60,bearing:-25,buildings:true,dem:true,draco:false,decoration:'flow'},
+  data:{kind:'static',rows:structuredClone(rows),url:'',method:'GET',headers:'{}',path:'',poll:30,sql:'SELECT name, value FROM screen_metrics ORDER BY value DESC LIMIT 20',params:'[]',fields:{name:'name',value:'value',secondary:'secondary'},maxRows:500},events:[],...extra};
+}
+export function themeById(id){return themes.find(t=>t.id===id)||themes[0]}

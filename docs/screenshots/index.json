@@ -1,0 +1,17 @@
+{
+  "captured": "2026-10-22",
+  "source": "Screenshots of the running Astra Studio application, not design mockups.",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "images": [
+    "overview.webp",
+    "workbench.webp",
+    "header-studio.webp",
+    "city.webp",
+    "agriculture.webp",
+    "industry.webp",
+    "campus.webp"
+  ]
+}

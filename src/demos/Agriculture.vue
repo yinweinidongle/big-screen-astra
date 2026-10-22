@@ -1,4 +1,6 @@
 <script setup>
+import {sitePath} from '../paths.js';
+
 import {computed,ref} from 'vue';
 import {Sprout,Leaf,Droplets,Sun,Wind,ArrowUpRight,ChevronRight,MapPin,Expand,Plus,Minus,RotateCcw,Play,Pause,Layers,CloudSun,Radio,Check,CalendarDays,X,Target,ScanLine} from 'lucide-vue-next';
 import SvgFlowRails from '../components/SvgFlowRails.vue';
@@ -23,7 +25,7 @@ function irrigate(){irrigating.value=!irrigating.value;notify(irrigating.value?'
    <mask id="agri-vein-mask" maskUnits="userSpaceOnUse" x="-120" y="200" width="1350" height="450"><rect class="agri-vein-window" x="-360" y="200" width="340" height="450" fill="url(#agri-tail-feather)"/></mask>
 
   </defs>
-  <image href="/assets/agriculture-header.png" width="2172" height="724" opacity=".8" mask="url(#agri-background-mask)"/>
+  <image :href="sitePath('/assets/agriculture-header.png')" width="2172" height="724" opacity=".8" mask="url(#agri-background-mask)"/>
   <g class="agri-vein-light" mask="url(#agri-vein-mask)">
    <use class="agri-vein-halo" href="#agri-vein-rail"/><use class="agri-vein-core" href="#agri-vein-rail"/>
   </g>
@@ -60,6 +62,6 @@ function irrigate(){irrigating.value=!irrigating.value;notify(irrigating.value?'
   <section class="agri-panel farm-plans"><div class="agri-panel-title"><h2><CalendarDays :size="15"/>今日农事计划</h2><span class="num">{{taskDone?'03':'02'}} / 03</span></div><div class="farm-plan"><span class="plan-icon done"><Check :size="12"/></span><div><strong>晨间土壤与墒情巡检</strong><p>08:00 · 全域 32 个地块</p></div><span>已完成</span></div><div class="farm-plan"><span class="plan-icon done"><Check :size="12"/></span><div><strong>温室精准水肥补给</strong><p>10:30 · A01–A06 温室</p></div><span>已完成</span></div><button class="farm-plan" @click="taskDone=true;notify('巡检任务已确认完成')"><span class="plan-icon" :class="{done:taskDone}"><component :is="taskDone?Check:Target" :size="12"/></span><div><strong>无人机作物长势巡检</strong><p>15:00 · B区大田种植区</p></div><span>{{taskDone?'已完成':'确认完成'}}</span></button><div class="plan-footer"><i class="live-led"></i>{{taskDone?'今日农事计划已全部完成':'今日农事按计划有序进行'}}</div></section>
  </aside>
 </main>
-<footer class="demo-footer"><div><i class="live-led"></i>生态感知网络正常<span>·</span>最近同步 {{time}}</div><nav aria-label="切换大屏"><a href="/">智慧城市</a><a href="/demo01" class="current">智慧农业</a><a href="/demo02">智慧工业 ↗</a><a href="/demo03/">智慧园区 ↗</a></nav><div><span class="demo-note">演示数据</span>AGRIVERSE · DIGITAL NATURE</div></footer><div class="demo-toast" v-if="toast" role="status">{{toast}}</div>
+<footer class="demo-footer"><div><i class="live-led"></i>生态感知网络正常<span>·</span>最近同步 {{time}}</div><nav aria-label="切换大屏"><a :href="sitePath('/')">智慧城市</a><a :href="sitePath('/demo01')" class="current">智慧农业</a><a :href="sitePath('/demo02')">智慧工业 ↗</a><a :href="sitePath('/demo03/')">智慧园区 ↗</a></nav><div><span class="demo-note">演示数据</span>AGRIVERSE · DIGITAL NATURE</div></footer><div class="demo-toast" v-if="toast" role="status">{{toast}}</div>
 </div>
 </template>

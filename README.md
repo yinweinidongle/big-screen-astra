@@ -1,58 +1,119 @@
-# 智慧城市 · 农业 · 工业 · 园区可视化大屏
+<div align="center">
 
-Vue 3 + Vite + Three.js 的四套独立可视化大屏，包含智慧城市、农业、工业与园区。全部数据为本地模拟数据，不代表上海市实时运行情况。
+# Astra Studio
 
-## 本地运行
+### 把数据，变成可以探索的空间。
+
+Vue 3 可视化大屏工作台 · Three.js 数字孪生 · SVG Header 设计器
+
+[中文](README.md) · [English](README.en.md) · [日本語](README.ja.md)
+
+[在线体验](https://yinweinidongle.github.io/big-screen-astra/) · [行业模板](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Header Studio](https://yinweinidongle.github.io/big-screen-astra/header-studio/) · [完整服务版](https://shanghai-city-observatory.brainy-pony-0848.chatgpt.site/)
+
+![MIT](https://img.shields.io/badge/license-MIT-8fb6ff) ![Vue 3](https://img.shields.io/badge/Vue-3-42b883) ![Three.js](https://img.shields.io/badge/Three.js-WebGL-101827) ![Node](https://img.shields.io/badge/Node-%E2%89%A522.12-5c9e56)
+
+![四套行业模板的实际画面](docs/screenshots/overview.webp)
+
+</div>
+
+Astra Studio 将自由画布、数据图表、真实 3D 场景和科技感标题编辑放在同一个工作空间。选择模板即可预览；每个组件的布局、样式、数据和交互都可以继续调整。所有内置业务数据均为演示数据。README 提供三语版本，编辑器当前为中文界面。
+
+## 从模板开始
+
+四套模板使用不同的布局、面板、图表和场景语言，而非简单换色。
+
+| 模板 | 视觉与场景 | 体验 |
+| --- | --- | --- |
+| 城市运行 | 冷蓝指挥舱；342 栋实例化建筑、陆家嘴地标、桥梁、滨水步道与车流 | [城市](https://yinweinidongle.github.io/big-screen-astra/templates/city/) |
+| 精准农业 | 翡翠与暖金；温室、1,134 株作物、果树、灌溉过滤系统与无人机 | [农业](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) |
+| 工业智造 | 石墨与琥珀；开放车间、机械臂、AGV、输送线、管线与检修走道 | [工业](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) |
+| 未来园区 | 紫银玻璃；幕墙楼宇、空中连廊、屋顶光伏、充电设施与喷泉 | [园区](https://yinweinidongle.github.io/big-screen-astra/templates/campus/) |
+
+## 创作工作台
+
+![Astra Studio 工作台实际截图](docs/screenshots/workbench.webp)
+
+- **自由布局**：拖拽、八向缩放、多选、组合、层级、锁定、智能吸附、对齐与等间距排列；适应、铺满、宽度自适应和拉伸模式。
+- **完整视觉配置**：29 个组件、14 种图表、6 种主题、6 种背景、8 种边框；数字翻动、滚动列表、渐变、辉光、暗角与色彩矩阵。
+- **空间组件**：Three.js 场景、智慧地球、GLB/glTF 模型、材质与动画、FlyTo、自动巡航、模型拾取及 POI 看板；Mapbox 支持建筑与 DEM 地形，需自行提供公开 Token。
+- **数据与联动**：静态 JSON、HTTP、WebSocket、字段映射、刷新周期、点击与悬浮事件、筛选和下钻。SQL 使用 Worker 中的受限 D1 查询；外部数据库通过自己的 HTTP 网关接入。
+- **可迁移项目**：IndexedDB 本机保存、撤销重做、历史快照；JSON 和包含素材的 `.astra.zip` 导入导出。
+
+## Header Studio
+
+![Header Studio 实际截图](docs/screenshots/header-studio.webp)
+
+12 款背景预设搭配经过校准的 SVG 光轨，可上传背景、绘制折线与曲线、拖动节点与标题、同步镜像，并自动裁剪交点后的多余线段。
+
+15 种效果包括彗星、渐隐拖尾、幻影、巡航光点、粒子、串珠、脉冲、信号编码、扫描、双向汇流、涟漪、光谱、电弧、呼吸与静态轮廓。颜色、速度、方向、粗细和光晕均可配置。
+
+导出独立 Vue 单文件组件，或下载包含组件、图片和 JSON 的 ZIP。组件只依赖 Vue 3.5+。`P` 绘制折线，`B` 绘制曲线，`Enter` 完成，`V` 选择，`Space` 暂停，`Ctrl/⌘ Z` 撤销。
+
+## 本地启动
+
+需要 **Node.js 22.12+** 和 npm。
 
 ```bash
-npm install
+git clone https://github.com/yinweinidongle/big-screen-astra.git
+cd big-screen-astra
+npm ci
 npm run dev
 ```
 
-生产构建：`npm run build`，本地预览构建：`npm run preview`。
-
-## 功能
-
-- 城市总览、智慧交通、绿色能源、生态环境、公共安全主题切换。
-- AI 生成上海夜景素材与真正可旋转的 Three.js 数字孪生场景。
-- 程序化城市建筑、陆家嘴地标、InstancedMesh 楼宇、窗光 Shader、河面 Shader、扫描环和粒子。
-- 场景图层开关、自动漫游、缩放、区域筛选、全屏显示。
-- SVG 折线、柱形、雷达、环形图表与头部动画。
-- 今日 / 本周趋势切换、事件详情和本地模拟处置流程。
-- 响应式布局、键盘交互、减少动态效果偏好、WebGL 不可用回退。
-
-## 项目结构
-
-- `src/App.vue`：页面布局、模拟数据与交互逻辑。
-- `src/components/CityScene.vue`：Three.js 场景与 GLSL Shader。
-- `src/components/Chart.vue`：轻量 SVG 图表。
-- `src/style.css`：视觉系统及屏幕适配。
-- `public/assets/shanghai-night.png`：使用文生图生成的夜景素材。
-
-夜景是 AI 生成的艺术化上海城市印象，三维场景为程序化概念模型，均不用于地理测绘。交通、环境等数据尚未连接真实业务接口。区域切换以演示比例调整顶部统计；事件处置仅保存于当前页面内存。字体使用 Google Fonts，网络不可用时使用本地系统字体。
-
-## 性能策略
-
-Three.js 独立分包、建筑实例化、像素比上限 1.5、约 30fps 渲染上限、页面不可见时跳过渲染、ResizeObserver 自适应、卸载时释放 GPU 资源。图表使用 SVG，无大型图表运行时依赖。
-
-## 新增独立大屏
-
-- `/demo01` 禾境 · 智慧农业生态管理中心：翡翠绿与淡金色、柔和曲面面板、AI 生成生态 Header 和 SVG 曲线流光；中央直接渲染农田、温室、蓄水池、风机和无人机。支持农业主题、区域统计、图层、模拟灌溉、农事确认与三维操作。
-- `/demo02` NEXUS · 智慧工业数字运营中心：石墨灰与琥珀色、金属切角面板、AI 生成机械 Header 和 SVG 电流；中央直接渲染开放式车间、机械臂、传送带和 AGV。支持监控主题、班次、图层、仿真暂停、工单详情和预警确认。
-
-- `/demo03` 星屿 · 智慧园区运营中心：紫蓝光学玻璃风格、AI 生成 Header、同步 SVG 流光；中央渲染园区楼宇、光伏阵列、动态车流和扫描波。支持园区总览、空间运营、智慧能源、安防态势、建筑详情、巡航、俯视与暂停仿真。
-
-新页面按路径独立懒加载，互不加载对方的页面样式；构建生成 `/demo01/index.html` 、`/demo02/index.html` 和 `/demo03/index.html`，可直接访问并刷新。三维静态模型按材质合批，动态枢轴和独立图层保留；农业作物采用 1,134 个实例，像素比上限 1.5、渲染约 30fps、页面不可见时跳过渲染、GPU 资源卸载释放。
-
-四页均为概念演示，模型不用于工程或地理测绘，灌溉、设备监控、事件确认只在当前页面模拟，未连接真实生产设备或控制接口。农业分区选择调整顶部演示统计；三维图层可通过农业主题或工业图层按钮切换。
-
-
-## 校验
+`npm run dev` 自动应用本地 D1 迁移，并启动 Vite `:5173` 和 Worker `:8787`。仅本机开发启用模拟开发账号。
 
 ```bash
-npm ci
-npm run build
-node scripts/verify-scenes.mjs
+npm test                 # 工作台、场景、真实 D1/R2、Header 与裁剪检查
+npm run build            # 完整前端 + Worker 构建
+npm run preview          # 本地预览完整构建
+npm run build:pages      # 生成 dist/pages 静态站点
+npm run preview:pages    # 预览 Pages 构建
 ```
 
-城市面板使用 `public/assets/city-panel-glass.png` 生成材质和 SVG 边缘微光，支持暂停及减少动态效果偏好。图片素材已包含在仓库中，无需单独下载。
+## 两种部署方式
+
+| 能力 | GitHub Pages | Worker + D1 + R2 |
+| --- | :---: | :---: |
+| 行业模板、3D 场景、Header 编辑与组件导出 | ✓ | ✓ |
+| 本机项目、素材、快照与项目包 | ✓ | ✓ |
+| 浏览器直连 HTTP / WebSocket | 需上游允许 CORS / 连接 | ✓ |
+| 账号隔离的云端项目与素材 | — | ✓ |
+| D1 SQL、发布快照、密码 / Token 分享 | — | ✓ |
+
+**GitHub Pages**：`.github/workflows/pages.yml` 在推送到 `master` / `main` 后运行检查、构建并部署。仓库 Settings → Pages 的 Source 选择 **GitHub Actions**。默认子路径为 `/big-screen-astra/`，工作流根据仓库名设置；自定义构建可用 `PAGES_BASE_PATH=/my-repo/ npm run build:pages`。页面具有独立 HTML 入口，支持嵌套路径直接访问和刷新。参考 [Vite 部署说明](https://vite.dev/guide/static-deploy.html#github-pages)。
+
+**完整服务**：`npm run build` 输出 `dist/client` 和 `dist/server`。Worker 需要 `ASSETS`、D1 `DB`、R2 `BUCKET` 绑定，并应用 `drizzle/` 迁移。云端写入使用 Sites 提供的可信身份；移植到其他宿主时需要适配服务端身份验证。不要在生产启用 `LOCAL_DEV`。受保护分享由服务端验证，纯静态站点不能替代该后端。
+
+## 页面入口
+
+以下路径相对于部署基础路径：
+
+| 路径 | 页面 |
+| --- | --- |
+| `/`、`/studio/` | 可视化工作台 |
+| `/templates/city/`、`/templates/agriculture/`、`/templates/industry/`、`/templates/campus/` | 四套可编辑行业模板预览 |
+| `/header-studio/` | Header 设计器 |
+| `/city/`、`/demo01/`、`/demo02/`、`/demo03/` | 保留的独立城市、农业、工业与园区大屏 |
+| `/player/` | 本机项目播放器 |
+| `/view/:slug` | 后端发布的大屏，需要完整服务 |
+
+## 性能与项目结构
+
+采用建筑与植被实例化、静态几何合批、按需分包、缓存阴影、自适应 DPR；隐藏页面或离开视野时停止绘制，暂停时按需渲染，卸载时释放 GPU 资源。三档画质分别提供最高 30 / 30 / 60fps 和 1× / 1.5× / 2× DPR 上限，实际表现取决于设备、分辨率与浏览器。
+
+```text
+src/workbench/          画布、配置 schema、组件、数据连接与详细 3D 场景
+src/studio/             Header 编辑器、SVG 光轨、预设与 Vue/ZIP 导出
+src/demos/              保留的独立行业大屏
+src/paths.js            域名根路径与 Pages 子路径适配
+server/                 身份、授权、项目、发布、SQL 与素材服务
+db/ · drizzle/          D1 数据声明与迁移
+scripts/                开发、构建、几何与集成检查
+docs/screenshots/       实际运行截图
+```
+
+## 贡献与许可证
+
+欢迎通过 Issue 报告问题，或提交 Pull Request。提交前运行 `npm test` 和 `npm run build:pages`；修改场景时请检查四套模板的动效、暂停、POI 与渲染开销。
+
+项目原创代码以 [MIT License](LICENSE) 开源。依赖包、字体、地图服务与公共领域地理数据的说明见 [第三方声明](THIRD_PARTY_NOTICES.md)。背景素材包含 AI 生成的艺术设计，提示词保存在 `docs/`。程序化模型与演示数据不代表真实地理测绘或设备运行情况。

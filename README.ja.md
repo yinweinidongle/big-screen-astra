@@ -1,0 +1,119 @@
+<div align="center">
+
+# Astra Studio
+
+### データを、探索できる空間へ。
+
+ビジュアルダッシュボード制作 · Three.js デジタルツイン · SVG ヘッダーデザイナー
+
+[中文](README.md) · [English](README.en.md) · [日本語](README.ja.md)
+
+[デモ](https://yinweinidongle.github.io/big-screen-astra/) · [テンプレート](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Header Studio](https://yinweinidongle.github.io/big-screen-astra/header-studio/) · [フル機能版](https://shanghai-city-observatory.brainy-pony-0848.chatgpt.site/)
+
+![MIT](https://img.shields.io/badge/license-MIT-8fb6ff) ![Vue 3](https://img.shields.io/badge/Vue-3-42b883) ![Three.js](https://img.shields.io/badge/Three.js-WebGL-101827) ![Node](https://img.shields.io/badge/Node-%E2%89%A522.12-5c9e56)
+
+![4 種類の業種別テンプレートの実際の画面](docs/screenshots/overview.webp)
+
+</div>
+
+Astra Studio は、自由配置のキャンバス、データ可視化、操作できる 3D シーン、アニメーション付きヘッダーの制作を一つのワークスペースにまとめたツールです。テンプレートから始め、各コンポーネントの配置、スタイル、データ、インタラクションを調整できます。内蔵の業務データはすべてデモ用です。README は 3 言語に対応しています。現在のエディター UI は中国語です。
+
+## それぞれ異なる 4 つのテンプレート
+
+レイアウト、パネル、チャート、3D シーンを業種ごとに設計しています。
+
+| テンプレート | デザインとシーンの特徴 | デモ |
+| --- | --- | --- |
+| スマートシティ | 寒色の指令センター。342 棟のインスタンス建築、上海のランドマーク、橋、水辺の遊歩道、車の流れ | [都市](https://yinweinidongle.github.io/big-screen-astra/templates/city/) |
+| スマート農業 | エメラルドと淡い金色。温室、1,134 株の作物、果樹、灌漑・ろ過設備、ドローン | [農業](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) |
+| スマート工場 | グラファイトと琥珀色。内部が見える工場、ロボットアーム、AGV、搬送ライン、配管、保守通路 | [工業](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) |
+| スマートキャンパス | 紫と銀のガラス表現。カーテンウォール、空中連絡通路、屋上太陽光、充電設備、噴水 | [キャンパス](https://yinweinidongle.github.io/big-screen-astra/templates/campus/) |
+
+## 制作ワークスペース
+
+![Astra Studio エディターの実際の画面](docs/screenshots/workbench.webp)
+
+- **自由なレイアウト**：ドラッグ、8 方向のサイズ変更、複数選択、グループ化、重なり順、ロック、吸着、整列、等間隔配置。全体表示、全面表示、幅に合わせる表示、引き伸ばしに対応。
+- **視覚効果の設定**：29 コンポーネント、14 種のチャート、6 テーマ、6 背景、8 種の枠。回転数字、スクロールリスト、グラデーション、グロー、周辺減光、色行列。
+- **空間コンポーネント**：Three.js シーンと地球、GLB/glTF 読み込み、マテリアル、アニメーション、FlyTo、自動巡回、モデル選択、POI カード。Mapbox の建築・DEM 地形には利用者自身の公開 Token が必要です。
+- **データと連動**：静的 JSON、HTTP、WebSocket、フィールド対応付け、更新間隔、クリック・ホバー、絞り込み、ドリルダウン。SQL は Worker 側の制限付き D1 クエリを利用し、外部 DB は独自の HTTP ゲートウェイ経由で接続します。
+- **持ち運べるプロジェクト**：IndexedDB 保存、元に戻す・やり直し、ローカル履歴。JSON や素材を含む `.astra.zip` を入出力できます。
+
+## Header Studio
+
+![Header Studio の実際の画面](docs/screenshots/header-studio.webp)
+
+12 種類の背景と輪郭に合わせた SVG 軌跡を用意しています。画像のアップロード、折れ線・曲線の描画、ノードとタイトルの移動、左右同期ミラー、交点以降の余分な線分の自動切り取りに対応します。
+
+彗星、フェードする尾、残像、移動する点、粒子、連続光点、パルス、信号コード、スキャン、双方向合流、波紋、スペクトル、電弧、明滅、静的輪郭の 15 エフェクトを搭載。色、速度、方向、太さ、グローを調整できます。
+
+Vue 単一ファイルコンポーネント、またはコンポーネント・画像・JSON を含む ZIP として出力できます。出力先では Vue 3.5+ が必要です。`P` で折れ線、`B` で曲線、`Enter` で完了、`V` で選択、`Space` で一時停止、`Ctrl/⌘ Z` で元に戻します。
+
+## ローカルで起動
+
+**Node.js 22.12+** と npm が必要です。
+
+```bash
+git clone https://github.com/yinweinidongle/big-screen-astra.git
+cd big-screen-astra
+npm ci
+npm run dev
+```
+
+開発コマンドはローカル D1 のマイグレーションを適用し、Vite `:5173` と Worker `:8787` を起動します。開発用アカウントはこのローカル環境でのみ有効です。
+
+```bash
+npm test                 # エディター、シーン、実 D1/R2、ヘッダー、交点処理
+npm run build            # フロントエンド + Worker
+npm run preview          # フル構成のビルドをローカルで確認
+npm run build:pages      # dist/pages に静的サイトを生成
+npm run preview:pages    # Pages 用ビルドを確認
+```
+
+## 2 つの公開方法
+
+| 機能 | GitHub Pages | Worker + D1 + R2 |
+| --- | :---: | :---: |
+| テンプレート、3D、ヘッダー編集、コンポーネント出力 | ✓ | ✓ |
+| ローカルプロジェクト、素材、履歴、プロジェクトパッケージ | ✓ | ✓ |
+| ブラウザーからの HTTP / WebSocket 接続 | 接続先の CORS・接続許可が必要 | ✓ |
+| アカウントごとのクラウドプロジェクト・素材 | — | ✓ |
+| D1 SQL、公開スナップショット、パスワード・Token 共有 | — | ✓ |
+
+**GitHub Pages**：`.github/workflows/pages.yml` が `master` / `main` への push 時に検証、ビルド、公開を実行します。Settings → Pages → Source で **GitHub Actions** を選択してください。ワークフローはリポジトリ名からベースパスを設定します。ローカルの既定値は `/big-screen-astra/` です。`PAGES_BASE_PATH=/my-repo/ npm run build:pages` で変更できます。個別の HTML エントリーがあるため、下層 URL への直接アクセスと再読み込みが可能です。[Vite の公開ガイド](https://vite.dev/guide/static-deploy.html#github-pages)も参照してください。
+
+**フル機能版**：`npm run build` で `dist/client` と `dist/server` を生成します。Worker に `ASSETS`、D1 `DB`、R2 `BUCKET` をバインドし、`drizzle/` のマイグレーションを適用してください。クラウドへの書き込みは Sites の信頼済みユーザー識別情報を利用します。別のホストへ移す場合はサーバー側認証の対応が必要です。本番で `LOCAL_DEV` を有効にしないでください。保護された共有にはサーバー側の検証が必要で、静的ホスティングだけでは利用できません。
+
+## ページ一覧
+
+以下は公開先のベースパスからの相対パスです。
+
+| パス | ページ |
+| --- | --- |
+| `/`、`/studio/` | ビジュアルエディター |
+| `/templates/city/`、`/templates/agriculture/`、`/templates/industry/`、`/templates/campus/` | 編集可能な業種別テンプレートのプレビュー |
+| `/header-studio/` | ヘッダーデザイナー |
+| `/city/`、`/demo01/`、`/demo02/`、`/demo03/` | 従来の都市・農業・工業・キャンパスの独立デモ |
+| `/player/` | ローカルプロジェクトのプレーヤー |
+| `/view/:slug` | サーバーで公開したダッシュボード。フル構成が必要 |
+
+## 性能と構成
+
+建築・植生のインスタンス化、静的ジオメトリの統合、必要時の分割読み込み、影のキャッシュ、DPR の自動調整を利用しています。非表示・画面外のシーンは描画を止め、一時停止中は必要に応じて描画し、終了時に GPU リソースを解放します。画質 3 段階の上限は 30 / 30 / 60fps、DPR は 1× / 1.5× / 2× です。実際の性能は機器、解像度、ブラウザーによって異なります。
+
+```text
+src/workbench/          キャンバス、schema、部品、データ接続、詳細 3D シーン
+src/studio/             ヘッダー編集、SVG 軌跡、プリセット、Vue/ZIP 出力
+src/demos/              従来の独立ダッシュボード
+src/paths.js            ルート・Pages サブパスの URL 処理
+server/                 認証、権限、プロジェクト、公開、SQL、素材サービス
+db/ · drizzle/          D1 定義とマイグレーション
+scripts/                開発、ビルド、ジオメトリ・統合検証
+docs/screenshots/       実際のアプリケーションのスクリーンショット
+```
+
+## コントリビュートとライセンス
+
+Issue と Pull Request を歓迎します。提出前に `npm test` と `npm run build:pages` を実行してください。シーンを変更した場合は 4 テンプレートのアニメーション、一時停止、POI、描画負荷を確認してください。
+
+本プロジェクト独自のコードは [MIT License](LICENSE) で公開しています。依存ライブラリ、フォント、地図サービス、パブリックドメインの地理データについては[第三者の権利表記](THIRD_PARTY_NOTICES.md)を参照してください。背景には AI 生成素材を含み、プロンプトは `docs/` に保存しています。手続き的に生成したシーンとデモデータは、実測地理情報や実稼働設備の状態を示すものではありません。

@@ -1,0 +1,4 @@
+<script setup>
+import {computed,ref,onMounted,onBeforeUnmount} from 'vue';const props=defineProps({value:Number,decimals:Number,animate:Boolean});const mounted=ref(false);let frame;onMounted(()=>frame=requestAnimationFrame(()=>mounted.value=true));onBeforeUnmount(()=>cancelAnimationFrame(frame));const digits=computed(()=>Number(props.value||0).toLocaleString('en-US',{minimumFractionDigits:props.decimals||0,maximumFractionDigits:props.decimals||0}).split(''));
+</script>
+<template><span class="aw-flip-number" :class="{'no-motion':!animate}" :aria-label="String(value)"><span v-for="(digit,i) in digits" :key="digits.length-i" :class="/\d/.test(digit)?'digit-window':'digit-separator'" aria-hidden="true"><span v-if="/\d/.test(digit)" class="digit-reel" :style="{transform:`translateY(-${(mounted?Number(digit):0)*10}%)`}"><span v-for="n in 10">{{n-1}}</span></span><span v-else>{{digit}}</span></span></span></template>

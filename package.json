@@ -1,1 +1,37 @@
-{"name":"shanghai-city-command","version":"1.0.0","type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","preview":"vite preview --host 0.0.0.0"},"dependencies":{"vue":"^3.5.18","three":"^0.180.0","lucide-vue-next":"^0.468.0"},"devDependencies":{"vite":"^7.1.5","@vitejs/plugin-vue":"^6.0.1"}}
+{
+  "name": "astra-screen-studio",
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/clean-build.mjs && vite build && node scripts/build-server.mjs",
+    "preview": "wrangler dev --local --config dist/server/wrangler.json --port 4173",
+    "dev:frontend": "vite --host 0.0.0.0",
+    "dev:server": "wrangler dev --local --config wrangler.local.json --port 8787 --var LOCAL_DEV:true",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 migrations apply DB --local --config wrangler.local.json",
+    "test": "node scripts/verify-workbench.mjs && node scripts/verify-sector-scenes.mjs && node scripts/verify-server.mjs && node scripts/verify-studio.mjs && node scripts/verify-trimming.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "preview:pages": "vite preview --outDir dist/pages --host 127.0.0.1"
+  },
+  "dependencies": {
+    "vue": "^3.5.18",
+    "three": "^0.180.0",
+    "lucide-vue-next": "^0.468.0",
+    "echarts": "^6.0.0",
+    "mapbox-gl": "^3.16.0",
+    "drizzle-orm": "^0.45.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.5",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "esbuild": "^0.25.0",
+    "wrangler": "^4.0.0",
+    "drizzle-kit": "^0.31.10"
+  },
+  "description": "Visual dashboard studio with Vue 3, Three.js, ECharts and an SVG header editor",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

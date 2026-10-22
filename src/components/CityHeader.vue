@@ -1,4 +1,6 @@
 <script setup>
+import {sitePath} from '../paths.js';
+
 import { CloudSun, Expand, Minimize } from 'lucide-vue-next';
 import SvgFlowRails from './SvgFlowRails.vue';
 defineProps({clock:String,date:String,weekday:String,fullscreen:Boolean});
@@ -18,7 +20,7 @@ const rightRail='M1774 476 H1335 L1247 566 H887';
           <linearGradient id="header-bottom-fade" x1="0" y1="0" x2="0" y2="1"><stop offset=".78" stop-color="white"/><stop offset="1" stop-color="black"/></linearGradient>
           <mask id="header-art-mask"><rect x="0" y="328" width="1774" height="276" fill="url(#header-bottom-fade)"/></mask>
         </defs>
-        <image href="/assets/header-command-frame.png" x="0" y="0" width="1774" height="887" preserveAspectRatio="none" mask="url(#header-art-mask)"/>
+        <image :href="sitePath('/assets/header-command-frame.png')" x="0" y="0" width="1774" height="887" preserveAspectRatio="none" mask="url(#header-art-mask)"/>
         <SvgFlowRails :paths="[leftRail,rightRail]" :nodes="[[438,476],[1335,476],[527,566],[1247,566]]" color="#a9f5ff" :duration="6.8"/>
         <SvgFlowRails :paths="['M0 459H424L512 548H756','M1774 459H1350L1262 548H1018']" color="#51bdde" :duration="6.8" :secondary="true"/>
         <SvgFlowRails :paths="['M0 343H680','M1774 343H1094']" color="#6ebfdb" :duration="6.8" :secondary="true"/>

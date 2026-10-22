@@ -1,0 +1,51 @@
+{
+  "tool": "Built-in image_gen",
+  "created": "2026-10-20",
+  "assets": [
+    {
+      "id": "aurora",
+      "name": "极光折翼",
+      "prompt": "Use case: stylized-concept. Asset: standalone premium dashboard header background, NOT a screenshot or UI mockup. Wide panoramic 3:1 landscape composition. Flat orthographic front view, centered and symmetric overall. Deep midnight navy #05121d background fading seamlessly at edges. Large empty dark center (middle 45% horizontally, middle 45% vertically) reserved for a title added later; NO TEXT, NO NUMBERS, NO ICONS, NO LOGOS, NO CHARTS, NO UI PANELS, NO WATERMARK. Keep most decorative material on left/right wings and along a low horizontal rail. Deliberate, exquisite restrained design with crisp traceable contour edges, minimal bloom. One main sharp thin luminous rim on each wing must form a continuous uninterrupted visible contour; important because SVG animation will follow this real rim exactly. Direction: AURORA FOLDED GLASS. Translucent celadon, emerald and turquoise layered glass ribbons, elegant shallow S-curves sweeping from the far left and right at mid-height down toward the lower center. Clean sinuous curves, subtly iridescent glass thickness, luminous mint rim. Avoid mechanical angular frame, avoid star field. Refined optical sculpture, quiet mint and teal, not purple.",
+      "path": "public/assets/header-aurora.png"
+    },
+    {
+      "id": "gold",
+      "name": "曜金矩阵",
+      "prompt": "Use case: stylized-concept. Asset: standalone premium dashboard header background, NOT a screenshot or UI mockup. Wide panoramic 3:1 landscape composition. Flat orthographic front view, centered and symmetric overall. Deep midnight navy #05121d background fading seamlessly at edges. Large empty dark center (middle 45% horizontally, middle 45% vertically) reserved for a title added later; NO TEXT, NO NUMBERS, NO ICONS, NO LOGOS, NO CHARTS, NO UI PANELS, NO WATERMARK. Keep most decorative material on left/right wings and along a low horizontal rail. Deliberate, exquisite restrained design with crisp traceable contour edges, minimal bloom. One main sharp thin luminous rim on each wing must form a continuous uninterrupted visible contour; important because SVG animation will follow this real rim exactly. Direction: CHAMPAGNE GOLD MATRIX. Precision machined dark titanium and champagne gold geometric wings. Distinct architectural stepped polygon contours: long horizontal rail from outside edge, a crisp diagonal drop near one-third, then another long shallow rail meeting lower center. Narrow warm gold illuminated groove embedded in metal, fine brushed bevel, no ornate filigree. Strong restrained monumental command-center aesthetic.",
+      "path": "public/assets/header-gold.png"
+    },
+    {
+      "id": "scarlet",
+      "name": "赤曜电路",
+      "prompt": "Use case: stylized-concept. Asset: standalone premium dashboard header background, NOT a screenshot or UI mockup. Wide panoramic 3:1 landscape composition. Flat orthographic front view, centered and symmetric overall. Deep midnight navy #05121d background fading seamlessly at edges. Large empty dark center (middle 45% horizontally, middle 45% vertically) reserved for a title added later; NO TEXT, NO NUMBERS, NO ICONS, NO LOGOS, NO CHARTS, NO UI PANELS, NO WATERMARK. Keep most decorative material on left/right wings and along a low horizontal rail. Deliberate, exquisite restrained design with crisp traceable contour edges, minimal bloom. One main sharp thin luminous rim on each wing must form a continuous uninterrupted visible contour; important because SVG animation will follow this real rim exactly. Direction: SCARLET CIRCUIT. Futuristic aerospace carbon black and crimson-red ceramic circuit architecture. Ultra clean low angular wings with two strong zigzag steps, precise thin scarlet and pale-coral luminous rails, sparse engineered surface grooves only near edges. Aggressive but sophisticated racing telemetry aesthetic, no large bulky frames, broad clean empty title area.",
+      "path": "public/assets/header-scarlet.png"
+    },
+    {
+      "id": "glacier",
+      "name": "冰川棱镜",
+      "prompt": "Use case: stylized-concept. Asset: standalone premium dashboard header background, NOT a screenshot or UI mockup. Wide panoramic 3:1 landscape composition. Flat orthographic front view, centered and symmetric overall. Deep midnight navy #05121d background fading seamlessly at edges. Large empty dark center (middle 45% horizontally, middle 45% vertically) reserved for a title added later; NO TEXT, NO NUMBERS, NO ICONS, NO LOGOS, NO CHARTS, NO UI PANELS, NO WATERMARK. Keep most decorative material on left/right wings and along a low horizontal rail. Deliberate, exquisite restrained design with crisp traceable contour edges, minimal bloom. One main sharp thin luminous rim on each wing must form a continuous uninterrupted visible contour; important because SVG animation will follow this real rim exactly. Direction: GLACIER PRISM. Sculptural frosted crystal and cool brushed silver facets on far left/right, sharp geometric icy wings like translucent diamond-cut lenses. One clear continuous ice-blue/white rim, long angular horizontal-diagonal-horizontal contour defining each wing. Pale cyan internal refraction, white pinpoint highlights, deep navy middle. Minimal luxurious architectural lighting, absolutely no gold or red.",
+      "path": "public/assets/header-glacier.png"
+    },
+    {
+      "id": "orbit",
+      "name": "星环引力",
+      "prompt": "Use case: stylized-concept. Asset: standalone premium dashboard header background, NOT a screenshot or UI mockup. Wide panoramic 3:1 landscape composition. Flat orthographic front view, centered and symmetric overall. Deep midnight navy #05121d background fading seamlessly at edges. Large empty dark center (middle 45% horizontally, middle 45% vertically) reserved for a title added later; NO TEXT, NO NUMBERS, NO ICONS, NO LOGOS, NO CHARTS, NO UI PANELS, NO WATERMARK. Keep most decorative material on left/right wings and along a low horizontal rail. Deliberate, exquisite restrained design with crisp traceable contour edges, minimal bloom. One main sharp thin luminous rim on each wing must form a continuous uninterrupted visible contour; important because SVG animation will follow this real rim exactly. Direction: CELESTIAL ORBIT. Two delicate elongated elliptical orbit rings with precise continuous lavender-white rims, flowing horizontally from outside edges through lower middle around a broad empty center. Rings look like smoky transparent lilac optical glass held in zero gravity, amethyst inner glow, extremely sparse dust at far edges only. The dominant ellipse arc must be crisp and thin enough to trace accurately, restrained cosmic observatory style, no planets.",
+      "path": "public/assets/header-orbit.png"
+    },
+    {
+      "id": "jade",
+      "name": "墨玉山河",
+      "prompt": "Use case: stylized-concept. Asset: standalone premium dashboard header background, NOT a screenshot or UI mockup. Wide panoramic 3:1 landscape composition. Flat orthographic front view, centered and symmetric overall. Deep midnight navy #05121d background fading seamlessly at edges. Large empty dark center (middle 45% horizontally, middle 45% vertically) reserved for a title added later; NO TEXT, NO NUMBERS, NO ICONS, NO LOGOS, NO CHARTS, NO UI PANELS, NO WATERMARK. Keep most decorative material on left/right wings and along a low horizontal rail. Deliberate, exquisite restrained design with crisp traceable contour edges, minimal bloom. One main sharp thin luminous rim on each wing must form a continuous uninterrupted visible contour; important because SVG animation will follow this real rim exactly. Direction: JADE LANDSCAPE. Modern Chinese-inspired restrained ink-jade glass forms, like very shallow layered mountain silhouettes across left and right wings, emerald-black polished jade with single hairline pale-gold edging following the flowing mountain contour. Broad dark center remains completely empty. Horizontal calm composition, smooth flowing contour rather than a mechanical frame, no literal buildings, no writing, no paintings or paper texture. Premium contemporary museum meets future technology.",
+      "path": "public/assets/header-jade.png"
+    }
+  ],
+  "alignment": {
+    "canvas": [
+      1600,
+      260
+    ],
+    "method": "Independent left/right luminous edge sampling with dynamic-programming continuity constraints and RDP simplification.",
+    "coordinateSource": "src/studio/generatedContours.json",
+    "script": "scripts/trace-header-contours.py"
+  }
+}

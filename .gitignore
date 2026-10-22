@@ -4,3 +4,6 @@ dist/
 .env
 .env.*
 *.tar.gz
+
+.wrangler/
+*.log

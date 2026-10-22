@@ -34,3 +34,10 @@ export function batchStatic(group,excluded=[]){
   for(const mesh of meshes){mesh.removeFromParent();mesh.geometry.dispose();}
  }
 }
+
+// Merge stationary line strips into segment buffers while preserving layer/rig boundaries.
+export function batchLines(group,excluded=[]){
+ group.updateWorldMatrix(true,true);const blocked=new Set(excluded),buckets=new Map(),inverse=group.matrixWorld.clone().invert();
+ function collect(o){if(blocked.has(o))return;if(o.isLine&&!o.material?.isShaderMaterial){const m=o.material,key=[m.color?.getHex(),m.opacity,m.depthWrite,m.blending].join(':');if(!buckets.has(key))buckets.set(key,{material:m,objects:[],points:[]});const bucket=buckets.get(key),a=o.geometry.getAttribute('position'),matrix=new THREE.Matrix4().multiplyMatrices(inverse,o.matrixWorld),step=o.isLineSegments?2:1;for(let i=0;i<a.count-1;i+=step){for(const j of [i,i+1]){const v=new THREE.Vector3().fromBufferAttribute(a,j).applyMatrix4(matrix);bucket.points.push(v.x,v.y,v.z);}}bucket.objects.push(o);}for(const child of o.children)collect(child);}
+ collect(group);for(const {material,objects,points} of buckets.values()){if(objects.length<2)continue;const geometry=new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(points,3)),mesh=new THREE.LineSegments(geometry,material);mesh.name='batched-architectural-lines';mesh.raycast=()=>{};group.add(mesh);objects.forEach(o=>{o.removeFromParent();o.geometry.dispose();});}
+}

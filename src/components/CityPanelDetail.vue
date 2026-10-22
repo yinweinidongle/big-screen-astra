@@ -1,7 +1,10 @@
+<script setup>
+import {sitePath} from '../paths.js';
+</script>
 <template>
  <div class="city-panel-detail" aria-hidden="true">
   <svg class="panel-material" viewBox="42 39 1448 945" preserveAspectRatio="none">
-   <image href="/assets/city-panel-glass.png" width="1536" height="1024" opacity=".64"/>
+   <image :href="sitePath('/assets/city-panel-glass.png')" width="1536" height="1024" opacity=".64"/>
    <g fill="none" stroke="#c6efff" stroke-width="1" vector-effect="non-scaling-stroke">
     <path class="panel-material-glint" d="M49 176V80L85 46H475" pathLength="1000"/>
     <path class="panel-material-glint" d="M1482 849V945L1446 978H1056" pathLength="1000"/>
