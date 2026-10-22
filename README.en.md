@@ -65,6 +65,11 @@ Fifteen effects cover comets, fading trails, ghosts, moving dots, particles, bea
 
 Export a standalone Vue single-file component or a ZIP with the component, image and JSON configuration. Exported components require Vue 3.5+. Shortcuts: `P` polyline, `B` curve, `Enter` finish, `V` select, `Space` pause, `Ctrl/⌘ Z` undo.
 
+The Tech Header widget and Header Studio share one complete configuration and SVG renderer. Select the widget → open **进入 Header 设计器** → apply with **应用到组件** to edit in place. Preview uses the actual dashboard, including its 3D scene. Fonts, weight, size, position, spacing, gradients, text glow, transparency and fitting update immediately. Preset changes preserve the title; cancel protection, undo, reopening and project import/export preserve the composition. The standalone editor's **用于大屏** transfers a design to the workbench for review before applying.
+
+![Connected header and dashboard editor](docs/screenshots/header-connected.webp)
+
+
 ## Run locally
 
 Requires **Node.js 22.12+** and npm.

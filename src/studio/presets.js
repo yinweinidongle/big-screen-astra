@@ -10,19 +10,23 @@ export const presets=[...generatedPresets,
  {id:'ice',name:'极地银翼',en:'ARCTIC SILVER',tag:'通用 · 冰银',color:'#cbeafa',background:{url:sitePath('/assets/header-command-frame.png'),width:1774,height:887,crop:{x:0,y:328,w:1774,h:276},filter:'saturate(.25) brightness(1.2)'},title:'数字孪生指挥中心',subtitle:'DIGITAL TWIN · OPERATIONS CENTER',lines:[rail('ice-main','银翼光轨',[[0,139],[395,139],[475,224],[800,224]],'#e5f8ff',{duration:7,width:1.4,glow:3})]},
  {id:'rose',name:'绯光边界',en:'ROSE HORIZON',tag:'通用 · 玫瑰',color:'#efb8e4',background:{url:sitePath('/assets/park-header.png'),width:1419,height:1108,crop:{x:0,y:380,w:1419,h:330},filter:'hue-rotate(55deg) saturate(.8)'},title:'未来科技创新中心',subtitle:'HORIZON · TOMORROW STARTS HERE',lines:[rail('rose-main','绯光曲线',[[0,32],[214,58],[400,146],[654,213]],'#ffc0e6',{kind:'curve',duration:6,width:1.6})]}
 ];
-export function makeConfig(preset=presets[0]){return structuredClone({version:1,width:1600,height:260,presetId:preset.id,background:{...preset.background,opacity:.9},title:preset.title,subtitle:preset.subtitle,titleColor:'#e0f1fa',accent:preset.color,fontSize:34,letterSpacing:7,titleX:800,titleY:112,subtitleSize:10,subtitleSpacing:4,bgColor:'#06121e',lines:preset.lines,...preset.settings});}
+export function makeConfig(preset=presets[0]){return structuredClone({version:1,width:1600,height:260,presetId:preset.id,background:{...preset.background,url:preset.background.url.slice(preset.background.url.indexOf('/assets/')),opacity:.9},title:preset.title,subtitle:preset.subtitle,titleColor:'#e0f1fa',accent:preset.color,fontSize:34,letterSpacing:7,titleX:800,titleY:112,subtitleSize:10,subtitleSpacing:4,subtitleOffset:31,subtitleOpacity:.68,fontFamily:'sans-serif',fontWeight:600,titleGradient:false,titleGradientTo:'#79a5f0',textGlow:0,bgOpacity:1,fit:'stretch',bgColor:'#06121e',lines:preset.lines,...preset.settings});}
 export function validateConfig(raw){
  if(!raw||typeof raw!=='object'||raw.version!==1||!Array.isArray(raw.lines)||raw.lines.length>80)throw Error('配置格式不正确，请导入由本编辑器导出的 JSON');
  const c=makeConfig(presets.find(p=>p.id===raw.presetId)||presets[0]);if(raw.presetId==='custom')c.presetId='custom';
  const num=(v,a,b)=>typeof v==='number'&&Number.isFinite(v)&&v>=a&&v<=b;
  const color=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v);
- for(const [key,min,max] of [['height',120,600],['fontSize',16,80],['letterSpacing',0,24],['titleX',0,1600],['titleY',0,600],['subtitleSize',6,24],['subtitleSpacing',0,12]])if(num(raw[key],min,max))c[key]=raw[key];
+ for(const [key,min,max] of [['height',120,600],['fontSize',16,80],['letterSpacing',0,24],['titleX',0,1600],['titleY',0,600],['subtitleSize',6,24],['subtitleSpacing',0,12],['subtitleOffset',12,100],['subtitleOpacity',0,1],['textGlow',0,20],['bgOpacity',0,1]])if(num(raw[key],min,max))c[key]=raw[key];
  for(const key of ['title','subtitle'])if(typeof raw[key]==='string')c[key]=raw[key].slice(0,160);
- for(const key of ['titleColor','accent','bgColor'])if(color(raw[key]))c[key]=raw[key];
+ for(const key of ['titleColor','accent','bgColor','titleGradientTo'])if(color(raw[key]))c[key]=raw[key];
+ if(['sans-serif','PingFang SC','Microsoft YaHei','monospace','serif'].includes(raw.fontFamily))c.fontFamily=raw.fontFamily;
+ if([300,400,500,600,700].includes(Number(raw.fontWeight)))c.fontWeight=Number(raw.fontWeight);
+ c.titleGradient=raw.titleGradient===true;
+ if(['stretch','contain','cover'].includes(raw.fit))c.fit=raw.fit;
  if(raw.background&&typeof raw.background.url==='string'){
-  const b=raw.background;if(!(/^\/assets\/[a-z0-9-]+\.png$/i.test(b.url)||/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(b.url)))throw Error('背景地址不受支持，请在编辑器内上传图片');
+  const b=raw.background;if(!(/^\/(?:[a-z0-9_-]+\/)*assets\/[a-z0-9-]+\.png$/i.test(b.url)||/^data:image\/(png|jpeg|webp);base64,[a-z0-9+/=]+$/i.test(b.url)))throw Error('背景地址不受支持，请在编辑器内上传图片');
   if(!num(b.width,1,12000)||!num(b.height,1,12000)||!b.crop||!['x','y','w','h'].every(k=>num(b.crop[k],k==='w'||k==='h'?1:0,12000)))throw Error('背景裁切参数不正确');
-  c.background={url:b.url,width:b.width,height:b.height,crop:{...b.crop},opacity:num(b.opacity,0,1)?b.opacity:.9};if(typeof b.filter==='string'&&presets.some(p=>p.background.filter===b.filter))c.background.filter=b.filter;
+  c.background={url:b.url.startsWith('data:')?b.url:b.url.slice(b.url.indexOf('/assets/')),width:b.width,height:b.height,crop:{...b.crop},opacity:num(b.opacity,0,1)?b.opacity:.9};if(typeof b.filter==='string'&&presets.some(p=>p.background.filter===b.filter))c.background.filter=b.filter;
  }
  const ids=new Set();c.lines=raw.lines.map((l,i)=>{
   if(!l||!Array.isArray(l.points)||l.points.length<2||l.points.length>200||!l.points.every(p=>num(p.x,0,1600)&&num(p.y,0,600)))throw Error('线条节点数据不正确');

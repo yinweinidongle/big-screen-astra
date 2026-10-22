@@ -7,7 +7,7 @@ export function componentSource(config,assetImport=null){
  const json=JSON.stringify(config,null,2).replaceAll('<','\\u003c');
  const moduleSource=`<script>\n${assetImport?`import headerBackground from './${assetImport}';\n`:''}const defaultConfig=${json};\n${assetImport?'defaultConfig.background.url=headerBackground;\n':''}</script>\n`;
  const trimming=trimmingSource.replace("import {pathData,mirrored} from './geometry.js';",geometrySource.replaceAll('export ','')).replaceAll('export ','');
- return moduleSource+rendererSource.replace("import {trimLinePaths} from './pathTrimming';",trimming).replace("import {effectSegments,segmentDash,segmentStyle,rippleNodes,lineRadius} from './lineEffects';",effectsSource.replaceAll('export ','')).replace('config:{type:Object,required:true}','config:{type:Object,default:()=>defaultConfig}');
+ return moduleSource+rendererSource.replace("import {sitePath} from '../paths.js';","const sitePath=value=>value;").replace("import {trimLinePaths} from './pathTrimming';",trimming).replace("import {effectSegments,segmentDash,segmentStyle,rippleNodes,lineRadius} from './lineEffects';",effectsSource.replaceAll('export ','')).replace('config:{type:Object,required:true}','config:{type:Object,default:()=>defaultConfig}');
 }
 export function downloadBlob(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
 const encoder=new TextEncoder();
