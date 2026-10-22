@@ -1,7 +1,8 @@
+import {agentApi} from './agent.js';
 import {validateProject} from '../src/workbench/schema.js';import {randomSecret,hash,passwordHash,equal,sessionCookie,hasGrant,assertPublicUrl,scopedSql} from './security.js';
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}});
 const fail=(message,status=400)=>{const e=new Error(message);e.status=status;throw e;};
-function identity(request,env){const id=request.headers.get('oai-authenticated-user-id');if(id)return {id,name:request.headers.get('oai-authenticated-user-full-name')||request.headers.get('oai-authenticated-user-email')||'Astra 用户'};if(env.LOCAL_DEV==='true')return {id:'local-development-user',name:'本地开发者'};return null;}
+function identity(request,env){const id=request.headers.get('oai-authenticated-user-id');if(id)return {id,email:request.headers.get('oai-authenticated-user-email')||'',name:request.headers.get('oai-authenticated-user-full-name')||request.headers.get('oai-authenticated-user-email')||'Astra 用户'};if(env.LOCAL_DEV==='true')return {id:'local-development-user',name:'本地开发者'};return null;}
 function requireUser(request,env){const user=identity(request,env);if(!user)fail('请先登录，再使用云端保存、SQL 数据库与发布功能',401);return user;}
 function csrf(request,env){if(['GET','HEAD','OPTIONS'].includes(request.method))return;const origin=request.headers.get('origin');if(origin&&origin!==new URL(request.url).origin&&!(env.LOCAL_DEV==='true'&&/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)))fail('请求来源不受支持',403);}
 async function body(request){if(Number(request.headers.get('content-length'))>8*1024*1024)fail('项目配置最大 8 MB',413);const text=await request.text();if(text.length>8*1024*1024)fail('项目配置最大 8 MB',413);try{return JSON.parse(text);}catch{fail('请求内容必须是 JSON');}}
@@ -16,6 +17,7 @@ async function api(request,env){const url=new URL(request.url),path=url.pathname
  if(path==='/api/examples/metrics')return json({rows:[{name:'浦东新区',value:98.6,secondary:94.2},{name:'黄浦区',value:96.4,secondary:91.6},{name:'徐汇区',value:94.2,secondary:89.3},{name:'静安区',value:92.8,secondary:87.4}],source:'demo',updatedAt:Date.now()});
  if(path==='/api/examples/ws'){if(request.headers.get('Upgrade')?.toLowerCase()!=='websocket')return json({error:'这是演示 WebSocket 推送地址'},426);const pair=new WebSocketPair(),[client,server]=Object.values(pair);server.accept();let tick=0;const send=()=>{try{server.send(JSON.stringify({rows:[{name:'节点 A',value:120+tick%20},{name:'节点 B',value:160+tick%30},{name:'节点 C',value:140+tick%15}],source:'demo',updatedAt:Date.now()}));tick++;}catch{clearInterval(timer);}};const timer=setInterval(send,3000);server.addEventListener('close',()=>clearInterval(timer));server.addEventListener('error',()=>clearInterval(timer));send();return new Response(null,{status:101,webSocket:client});}
  if(path==='/api/session')return json({user:identity(request,env),signInUrl:'/signin-with-chatgpt?return_to=%2F'});
+ if(path.startsWith('/api/agent/'))return agentApi(request,env,identity(request,env));
  if(path==='/api/health')return json({status:'ready',database:!!db,storage:!!env.BUCKET});
  if(!db)fail('云端数据库尚未配置，本机编辑与导出仍可使用',503);
  if(path==='/api/projects'&&request.method==='GET'){const user=requireUser(request,env);return json((await db.prepare('SELECT id,name,updated_at FROM screen_projects WHERE owner_id=? ORDER BY updated_at DESC LIMIT 100').bind(user.id).all()).results);}

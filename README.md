@@ -55,6 +55,23 @@ Astra Studio 将自由画布、数据图表、真实 3D 场景和科技感标题
 
 ![自定义交互标签与信息面板](docs/screenshots/scene-panel.webp)
 
+## Astra Copilot · 大屏设计智能体
+
+![智能体的工具执行与交付检查](docs/screenshots/agent-copilot.webp)
+
+点击右上角「智能创作」，描述业务、风格、重点指标和场景。助手通过 **18 项原生工具** 创建可编辑作品，也能在「优化当前 / 选中组件」范围内精修 Header、图表、材质、已有 3D 场景与交互标签。
+
+- **执行 → 反馈 → 评估 → 修正**：每个工具的输入、返回结果、耗时和失败反馈都可展开查看。检查实际 DOM、文字溢出、边界、图表字段、交互引用和 Three.js 运行指标，最多 16 轮调用、2 轮修正。
+- **草稿与原稿分离**：生成时直接在画布预览，可对比原稿；点击应用后保持原生可编辑，支持整体撤销。锁定和选中范围受到保护；原稿发生手动修改时阻止旧结果覆盖。完成的草稿可在刷新后恢复。
+- **模型自由配置**：默认 OpenRouter / `anthropic/claude-haiku-5.5`。支持 DeepSeek、通义千问、智谱、Kimi、豆包、硅基流动、MiniMax、OpenAI、Anthropic、Gemini 和自定义 HTTPS 兼容接口，可刷新模型列表、输入模型 ID、测试实际函数工具调用。其他厂商使用各自密钥，实际模型能力以厂商为准。
+- **密钥在服务端**：默认密钥限工作空间所有者使用；个人连接按账号隔离，API Key 通过 AES-GCM 加密存入 D1，不进入前端构建、项目 JSON 或导出包。修改接口地址后必须重新填写对应密钥。
+
+评分代表结构与运行检查，不代表已完成图片审美评估。没有提供真实数据时使用演示数据；配置数据源不会冒充已连接成功。生成支持停止，已经执行的部分仍可预览。
+
+**本地配置**：复制 `.dev.vars.example` 为 `.dev.vars`，填写 `AGENT_DEFAULT_API_KEY`、`AGENT_DEFAULT_MODEL` 和稳定的 64 位十六进制 `AGENT_ENCRYPTION_KEY`，再运行 `npm run dev`。本地模式无需登录。生产部署将相同配置设为运行时 Secret，并配置 `AGENT_DEFAULT_OWNER_ID` 或 `AGENT_DEFAULT_OWNER_EMAIL`；使用 Sites 托管身份登录，不能把密钥放在 `VITE_*` 变量里。加密密钥更换后需重新保存个人模型密钥。
+
+**GitHub Pages** 为静态编辑器，无法保存服务端密钥；「携带项目打开智能创作」会通过严格来源校验的窗口通道，将当前项目、输入意图和本机素材带入完整服务版（素材总量上限 100 MB）。完整服务版登录后即可继续生成。接收过程保留原项目，不自动触发付费模型调用。
+
 ## Header Studio
 
 ![Header Studio 实际截图](docs/screenshots/header-studio.webp)
