@@ -13,7 +13,7 @@ export function resolveHeaderConfig(node,theme={}) {
 }
 export function applyHeaderConfig(node,value){
  const c=validateConfig(value);node.props.headerConfig=c;
- Object.assign(node.props,{preset:c.presetId,text:c.title,subtitle:c.subtitle,titleSize:c.fontSize});
+ Object.assign(node.props,{preset:c.presetId,title:c.title,text:c.title,subtitle:c.subtitle,titleSize:c.fontSize});
  return c;
 }
 export function headerPreset(current,preset){

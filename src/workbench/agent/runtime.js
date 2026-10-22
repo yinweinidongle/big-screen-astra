@@ -1,49 +1,99 @@
 import {createDesignEngine,evaluateProject,projectContext,redactForModel} from './engine.js';
-import {agentTools} from './contracts.js';
-export async function agentRequest(path,body,signal){const r=await fetch('/api/agent/'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{}),signal});let data;try{data=await r.json()}catch{throw Error('智能体接口不可用，请使用已部署 Worker 的完整服务版');}if(!r.ok){const e=new Error(data.error||'智能体请求失败');e.status=r.status;e.code=data.code;throw e;}return data;}
-export function inspectCanvas(project,root=document.querySelector('.aw-canvas-viewport')){
- const issues=[],scenes=[],byId=new Map(project.nodes.map(n=>[n.id,n]));
- for(const el of root?.querySelectorAll('[data-node-id]')||[]){const node=byId.get(el.dataset.nodeId);if(!node?.visible)continue;
- for(const text of el.querySelectorAll('.aw-panel-title strong,.aw-number-caption,.aw-text'))if(text.clientWidth>0&&text.scrollWidth>text.clientWidth+4)issues.push({code:'text-overflow',severity:'warning',nodeId:node.id,message:node.name+' 的文字可能截断，请减少字数或字号'});
- const error=el.querySelector('.aw-data-error');if(error)issues.push({severity:'warning',code:'data-runtime',nodeId:node.id,message:node.name+'：'+error.textContent.slice(0,160)});
- const code=el.querySelector('[data-code-state]');if(code?.dataset.codeState==='error')issues.push({severity:'error',code:'code-runtime',nodeId:node.id,message:node.name+'：'+(code.dataset.codeError||'代码运行失败').slice(0,1800)});
- const state=el.querySelector('.aw-scene-state');if(state){const failed=state.textContent.includes('失败')||state.textContent.includes('错误');issues.push({severity:failed?'error':'warning',code:failed?'scene-error':'scene-loading',nodeId:node.id,message:node.name+'：'+state.textContent.trim().slice(0,160)});}
- for(const canvas of el.querySelectorAll('canvas')){if(!canvas.width||!canvas.height)issues.push({code:'canvas-size',severity:'warning',nodeId:node.id,message:node.name+' 画布尚未准备好'});if(canvas.dataset.fps){const fps=Number(canvas.dataset.fps),drawCalls=Number(canvas.dataset.drawCalls||0),triangles=Number(canvas.dataset.triangles||0);scenes.push({nodeId:node.id,fps,drawCalls,triangles});if(fps>0&&fps<24)issues.push({code:'fps',severity:'warning',nodeId:node.id,message:node.name+' 实测帧率较低，建议降低阴影和模型复杂度'});}}
- }
- return {issues,metrics:{sceneTelemetry:scenes,renderChecked:!!root,measuredAt:Date.now()}};
+import {agentTools,readOnlyTools} from './contracts.js';
+import {compactTranscript,callIdentity,boundReceipt} from './transcript.js';
+
+export async function agentRequest(path,body,signal){
+ const deadline=AbortSignal.timeout(65000),combined=signal?AbortSignal.any([signal,deadline]):deadline;
+ let r;try{r=await fetch('/api/agent/'+path,{method:body?'POST':'GET',headers:body?{'Content-Type':'application/json'}:{},...(body?{body:JSON.stringify(body)}:{}),signal:combined});}catch(e){if(deadline.aborted&&!signal?.aborted)throw Object.assign(Error('模型响应超时，可继续完成已保留的草稿'),{code:'REQUEST_TIMEOUT',status:504});throw e;}
+ let data;try{data=await r.json()}catch{throw Error('智能体接口不可用，请使用完整服务版');}
+ if(!r.ok)throw Object.assign(Error(data.error||'智能体请求失败'),{status:r.status,code:data.code,retryAfter:data.retryAfter});
+ return data;
 }
 const sleep=(ms,signal)=>new Promise((resolve,reject)=>{if(signal?.aborted)return reject(new DOMException('Aborted','AbortError'));const done=()=>{signal?.removeEventListener('abort',abort);resolve();},timer=setTimeout(done,ms),abort=()=>{clearTimeout(timer);reject(new DOMException('Aborted','AbortError'));};signal?.addEventListener('abort',abort,{once:true});});
-export async function runDesignAgent({project,selectedIds,mode='auto',scope='all',prompt,profileId,model,signal,history=[],canvasSource='canvas',onEvent=()=>{},onDraft=async()=>{},inspect=async()=>({}),request=agentRequest,maxRounds=16}){
- const engine=createDesignEngine(project,{mode,scope,selectedIds,onChange:async p=>{await onDraft(p);},inspect});const messages=[{role:'user',content:JSON.stringify({request:prompt,mode,scope,selectedIds,previousConversation:history.slice(-4).map(m=>({role:m.role,content:m.content.slice(0,1500)})),canvas:{id:project.id,name:project.name,width:project.width,height:project.height,source:canvasSource,componentCount:project.nodes.length},instruction:'先读取 get_project_context，再用 plan_design 自动判断新建/优化和编辑范围。用户无需选择。canvas 是本轮唯一真实编辑文档；pending-draft 表示上一轮完整草稿，不能回到历史原稿或仅根据历史文字重建。默认保留全部现有组件，标题等局部修改只修改对应组件；只有用户最新需求明确新建、另做作品或空画布时创建独立新草稿。'})}];
- const baselineWarnings=new Set(evaluateProject(project).warnings.map(w=>JSON.stringify([w.code,w.nodeId,w.message])));let deliverySummary='';let tokens={input:0,output:0},repairs=0,forced=0,lastText='',requestCount=0;const receipts=new Map(),started=Date.now();
- onEvent({type:'stage',stage:'planning',label:'理解需求与设计规划'});
- try{for(let round=0;round<maxRounds;round++){
- if(signal?.aborted)throw new DOMException('Aborted','AbortError');if(Date.now()-started>480000)throw Error('本轮已达到 8 分钟执行预算，已保留完成的草稿');
- onEvent({type:'round',round:round+1,maxRounds});let response;
- for(let attempt=0;attempt<2;attempt++){try{requestCount++;response=await request('chat',{profileId,model,messages},signal);break;}catch(e){if(signal?.aborted||attempt||![429,502,503,504].includes(e.status))throw e;onEvent({type:'notice',message:'模型接口暂时繁忙，正在重试这一轮…'});await sleep(1500,signal);}}
- tokens.input+=response.usage?.input_tokens||0;tokens.output+=response.usage?.output_tokens||0;onEvent({type:'usage',tokens:{...tokens},model:response.model||model});
- const message=response.message;if(!message)throw Error('模型没有返回可执行结果');const calls=message.tool_calls||[];messages.push({...message,...(!calls.length?{tool_calls:undefined}:{})});if(message.content){lastText=message.content;onEvent({type:'assistant',content:message.content});}
- if(calls.length){if(calls.length>20)throw Error('模型单轮工具调用过多');onEvent({type:'stage',stage:'executing',label:'执行设计器工具'});
- for(const call of calls){if(signal?.aborted)throw new DOMException('Aborted','AbortError');const name=call.function?.name;if(!agentTools.some(t=>t.function.name===name))throw Error('模型调用了未注册工具');const start=performance.now();let args,result;
- try{args=JSON.parse(call.function.arguments||'{}');}catch{args={};result={ok:false,error:'参数必须为合法 JSON，请修正后重试'};}
- const id=call.id||'tool-'+crypto.randomUUID();if(!call.id)call.id=id;
- onEvent({type:'tool-start',id,name,args:redactForModel(args)});
- if(receipts.has(id))result=receipts.get(id);else{if(name==='evaluate_design')onEvent({type:'stage',stage:'evaluating',label:'评估布局、数据与运行状态'});result=result||await engine.execute(name,args);receipts.set(id,result);}
- if(name==='plan_design'&&result.ok)onEvent({type:'brief',brief:engine.brief});if(name==='evaluate_design'&&result.ok)onEvent({type:'evaluation',report:result});
- const safeResult=redactForModel(result,0,name==='read_code_file'?16000:4000);onEvent({type:'tool-result',id,name,ok:result.ok,result:safeResult,duration:Math.round(performance.now()-start)});messages.push({role:'tool',tool_call_id:id,content:JSON.stringify(safeResult)});
+
+export function inspectCanvas(project,root=document.querySelector('.aw-canvas-viewport'),{ids}={}){
+ const issues=[],scenes=[],widgets=[],byId=new Map(project.nodes.map(n=>[n.id,n])),wanted=ids?.length?new Set(ids):null;
+ if(!root)return {issues:[{code:'preview-unavailable',severity:'error',message:'预览画布尚未就绪，请等待画布加载后继续'}],metrics:{renderChecked:false},widgets};
+ for(const el of root.querySelectorAll('[data-node-id]')){
+  const node=byId.get(el.dataset.nodeId);if(!node?.visible||wanted&&!wanted.has(node.id))continue;
+  for(const text of el.querySelectorAll('.aw-panel-title strong,.aw-number-caption,.aw-text'))if(text.clientWidth>0&&text.scrollWidth>text.clientWidth+4)issues.push({code:'text-overflow',severity:'warning',nodeId:node.id,message:node.name+' 的文字可能截断，请减少字数或字号'});
+  const data=el.querySelector('[data-data-state]'),code=el.querySelector('[data-code-state]'),state=el.querySelector('.aw-scene-state');
+  const item={nodeId:node.id,name:node.name,type:node.type,data:{state:data?.dataset.dataState||'unknown',rows:Number(data?.dataset.rowCount||0)}};
+  for(const [key,attribute] of [['fields','dataFields'],['sample','dataSample']])try{item.data[key]=JSON.parse(data?.dataset[attribute]||'[]')}catch{}
+  const error=el.querySelector('.aw-data-error');if(error)issues.push({severity:'warning',code:'data-runtime',nodeId:node.id,message:node.name+'：'+error.textContent.slice(0,180)});
+  if(code){item.code={state:code.dataset.codeState,activation:code.dataset.codeActivation};if(code.dataset.codeState==='error')issues.push({severity:'error',code:'code-runtime',nodeId:node.id,message:node.name+'：'+(code.dataset.codeError||'代码运行失败').slice(0,1800)});}
+  if(state){const failed=/失败|错误|丢失|无法/.test(state.textContent);item.pending=!failed;issues.push({severity:'error',code:failed?'scene-error':'render-pending',nodeId:node.id,message:node.name+'：'+state.textContent.trim().slice(0,160)});}
+  if(code?.dataset.codeState==='building'){item.pending=true;issues.push({severity:'error',code:'render-pending',nodeId:node.id,message:node.name+' 的代码正在编译，请等待实际运行结果'});}
+  for(const canvas of el.querySelectorAll('canvas')){
+   if(!canvas.width||!canvas.height)issues.push({code:'canvas-size',severity:'warning',nodeId:node.id,message:node.name+' 画布尚未准备好'});
+   if(canvas.dataset.fps){const fps=Number(canvas.dataset.fps),drawCalls=Number(canvas.dataset.drawCalls||0),triangles=Number(canvas.dataset.triangles||0);scenes.push({nodeId:node.id,fps,drawCalls,triangles,frameCpuMs:Number(canvas.dataset.frameCpuMs||0)});if(fps>0&&fps<24)issues.push({code:'fps',severity:'warning',nodeId:node.id,message:node.name+' 实测帧率较低，建议降低阴影和模型复杂度'});}
+  }
+  widgets.push(item);
  }
- continue;
- }
- if(!engine.modified){if(++forced>1)throw Error('模型没有执行有效设计修改。可换一个支持工具调用的模型后重试。');messages.push({role:'user',content:'请实际执行设计器工具，完成用户要求；不能仅提供设计建议。'});continue;}
- let report=engine.report;
- if(!report){onEvent({type:'stage',stage:'evaluating',label:'检查草稿交付质量'});report=await engine.execute('evaluate_design',{});onEvent({type:'evaluation',report});}
- if(!deliverySummary)deliverySummary=lastText;const actionable=report.errors.length||report.warnings.some(w=>!baselineWarnings.has(JSON.stringify([w.code,w.nodeId,w.message]))&&['bounds','overlap','field','text-overflow','title','fps','asset','scene-error','unit-mismatch'].includes(w.code));
- if(actionable&&repairs<2){repairs++;onEvent({type:'stage',stage:'repairing',label:'依据评估反馈修正 · '+repairs+'/2'});messages.push({role:'user',content:'交付检查发现新问题，请修复后再次 evaluate_design。必须尊重编辑范围和锁定对象，不要改动用户要求保留的无关内容。无法处理的提醒保留并解释。最终说明必须汇总本次任务所有已经完成的工作，不能把最后一轮没有新增修改误说成整个任务没有修改，也不要要求用户选择才能交付已经完成的草稿。'+JSON.stringify(report)});continue;}
- onEvent({type:'stage',stage:'complete',label:report.errors.length?'草稿已保留，仍有问题待修正':'设计已完成，准备自动应用'});
- return {project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,summary:repairs&&deliverySummary&&deliverySummary!==lastText?deliverySummary+'\n\n**最后一轮检查说明**\n'+lastText:lastText,modified:true,tokens,rounds:round+1,requestCount,repairs};
- }
- throw Error('已达到本轮工具调用上限，已保留完成的草稿；可继续提出局部修改');
- }catch(error){if(engine.modified){await onDraft(engine.project);const report=await engine.execute('evaluate_design',{});onEvent({type:'evaluation',report});error.partial={project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,modified:true,tokens,summary:signal?.aborted?'已停止，完成的部分已保留':error.message};}throw error;}
+ const expected=project.nodes.filter(n=>n.visible&&(!wanted||wanted.has(n.id)));
+ for(const n of expected)if(!widgets.some(w=>w.nodeId===n.id))issues.push({code:'render-pending',severity:'error',nodeId:n.id,message:n.name+' 尚未挂载到实际画布'});
+ return {issues,widgets,metrics:{sceneTelemetry:scenes,renderChecked:true,mounted:widgets.length,expected:expected.length,measuredAt:Date.now()}};
+}
+export async function inspectRuntime(project,{ids,waitMs=1500,signal}={}){
+ const start=performance.now();let report;
+ do{if(signal?.aborted)throw new DOMException('Aborted','AbortError');report=inspectCanvas(project,undefined,{ids});const waiting=report.issues.some(i=>['render-pending','preview-unavailable'].includes(i.code))||report.widgets.some(w=>w.data.state==='loading');if(!waiting||performance.now()-start>=waitMs)break;await sleep(100,signal);}while(true);
+ return report;
 }
 
-export async function waitForCode({codeNodeId,hash},signal){const start=performance.now();while(performance.now()-start<14000){if(signal?.aborted)throw new DOMException('Aborted','AbortError');const node=[...document.querySelectorAll('[data-node-id]')].find(el=>el.dataset.nodeId===codeNodeId),el=node?.querySelector('[data-code-state]');if(el?.dataset.codeHash===hash){if(el.dataset.codeState==='error')return {code:{state:'error',message:el.dataset.codeError}};if(el.dataset.codeState==='ready'){let stats={};try{stats=JSON.parse(el.dataset.codeStats||'{}')}catch{}return {code:{state:'ready',stats,diagnostics:[]}};}}await sleep(80,signal);}return {code:{state:'error',message:'等待代码实际编译运行超时，请减少构建复杂度后重试'}};}
+export async function runDesignAgent({project,selectedIds=[],mode='auto',scope='all',prompt,profileId,model,signal,history=[],canvasSource='canvas',resume=false,onEvent=()=>{},onDraft=async()=>{},onCheckpoint=async()=>{},inspect=async()=>({}),request=agentRequest,maxRounds=16}){
+ let pending=null,lastPublished=null,publishes=0,checkpointVersion=-1;
+ const publish=async()=>{if(!pending)return;const next=pending;pending=null;if(next===lastPublished)return;await onDraft(next);lastPublished=next;publishes++;};
+ const engine=createDesignEngine(project,{mode,scope,selectedIds,contextProvided:true,onChange:async(p,options)=>{pending=p;if(options?.flush)await publish();},inspect});
+ let messages=[{role:'user',content:JSON.stringify({request:prompt,mode,scope,selectedIds,resume,previousConversation:history.slice(-4).map(m=>({role:m.role,content:m.content.slice(0,1200)})),currentContext:projectContext(project,{selectedIds,mode,scope,detail:'summary'}),canvas:{id:project.id,name:project.name,width:project.width,height:project.height,source:canvasSource,componentCount:project.nodes.length},instruction:resume?'继续完成当前完整草稿中尚未完成的步骤，已经执行的添加、删除、代码编写不要重复，不得重新创建画布。':'currentContext 已提供真实组件 ID，可直接 plan_design，不必重复读取。局部修改用 targetIds 保留其余组件；仅在用户明确要求新作品时创建独立草稿。'})}];
+ const baselineWarnings=new Set(evaluateProject(project).warnings.map(w=>JSON.stringify([w.code,w.nodeId,w.message]))),receipts=new Map(),readCache=new Map(),started=Date.now();
+ let tokens={input:0,output:0},repairs=0,forced=0,lastText='',requestCount=0,toolCount=0,badBatches=0,truncations=0,compactions=0,deliverySummary='',roundCount=0;
+ const checkpoint=async()=>{if(!engine.modified||checkpointVersion===engine.version)return;checkpointVersion=engine.version;await onCheckpoint({project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,modified:true,interrupted:true,changes:engine.changes,report:evaluateProject(engine.project,{},engine.brief?.checks),tokens:{...tokens},summary:'已保留本轮执行进度，可继续完成。'});};
+ const finish=(report,noChange=false)=>({project:engine.project,mode:engine.mode,scope:engine.scope,brief:engine.brief,report,changes:engine.changes,summary:repairs&&deliverySummary&&deliverySummary!==lastText?deliverySummary+'\n\n最后一轮检查：'+lastText:lastText,modified:!noChange,noChange,tokens,rounds:roundCount,requestCount,repairs,performance:{elapsedMs:Date.now()-started,toolCalls:toolCount,previewUpdates:publishes,compactions}});
+ onEvent({type:'stage',stage:'planning',label:'理解需求与设计规划'});
+ try{
+  for(let round=0;round<maxRounds;round++){
+   if(signal?.aborted)throw new DOMException('Aborted','AbortError');if(Date.now()-started>480000)throw Error('本轮达到 8 分钟执行预算，完成的草稿已保留，可继续完成');
+   roundCount=round+1;onEvent({type:'round',round:roundCount,maxRounds});const first=JSON.parse(messages[0].content);first.currentContext=projectContext(engine.project,{selectedIds,mode:engine.mode,scope:engine.scope,brief:engine.brief,detail:'summary',version:engine.version});messages[0]={...messages[0],content:JSON.stringify(first)};
+   const compacted=compactTranscript(messages);if(compacted!==messages){messages=compacted;compactions++;onEvent({type:'notice',message:'已整理较早的执行记录，源代码和完整草稿继续保留'});}
+   let response;for(let attempt=0;attempt<2;attempt++){try{requestCount++;response=await request('chat',{profileId,model,messages},signal);break;}catch(e){if(signal?.aborted||attempt||![429,502,503,504].includes(e.status)||e.code&&['PROVIDER_AUTH','PROVIDER_MODEL','PROVIDER_RESPONSE_TOO_LARGE'].includes(e.code))throw e;onEvent({type:'notice',message:'模型接口暂时繁忙，正在重试…'});await sleep(Math.min(5000,Math.max(1000,Number(e.retryAfter||1.5)*1000)),signal);}}
+   tokens.input+=response.usage?.input_tokens||0;tokens.output+=response.usage?.output_tokens||0;onEvent({type:'usage',tokens:{...tokens},model:response.model||model});
+   if(['length','max_tokens'].includes(response.finishReason)){if(++truncations>2)throw Error('模型连续输出过长，草稿已保留。请缩小这一步的修改范围后继续。');onEvent({type:'notice',message:'模型输出被截断，正在要求拆分为更小的文件或修改'});messages.push({role:'user',content:'上轮输出被长度限制截断，工具未执行。请将代码拆成更小文件，减少单次输出后重试。'});continue;}
+   const message=response.message;if(!message)throw Error('模型没有返回可执行结果');const calls=message.tool_calls||[];
+   const invalid=calls.length>20||new Set(calls.map(c=>c.id)).size!==calls.length||calls.some(c=>!agentTools.some(t=>t.function.name===c.function?.name)||String(c.function?.arguments||'').length>80000);
+   if(invalid){if(++badBatches>2)throw Error('模型连续返回无效工具调用，已保留草稿，可更换支持工具的模型后继续');messages.push({role:'user',content:'上轮包含未知工具、重复 ID 或超长参数，整批工具未执行。请使用已注册工具、唯一调用 ID，并拆分大型源码。'});continue;}
+   for(const call of calls)if(!call.id)call.id='tool-'+crypto.randomUUID();
+   messages.push({...message,...(!calls.length?{tool_calls:undefined}:{})});
+   if(message.content){lastText=message.content;onEvent({type:'assistant',content:message.content});}
+   if(calls.length){
+    onEvent({type:'stage',stage:'executing',label:'执行设计器工具'});
+    for(const call of calls){
+     if(signal?.aborted)throw new DOMException('Aborted','AbortError');if(++toolCount>96)throw Error('本轮达到 96 次工具执行预算，完成的草稿已保留，可继续完成');
+     const name=call.function.name,start=performance.now(),id=(round+1)+':'+call.id;let args,result;
+     try{args=JSON.parse(call.function.arguments||'{}')}catch{args={};result={ok:false,error:'参数必须为合法 JSON，请修正后重试'};}
+     onEvent({type:'tool-start',id,name,args:redactForModel(args)});
+     const identity=callIdentity(call,args),readKey=engine.version+'|'+JSON.stringify(engine.brief)+'|'+identity,receiptKey=readOnlyTools.has(name)?readKey:call.id+'|'+identity,cacheable=readOnlyTools.has(name)&&!['evaluate_design','inspect_runtime'].includes(name);
+     const dynamic=['evaluate_design','inspect_runtime'].includes(name);
+     if(!result){if(!dynamic&&receipts.has(receiptKey))result={...receipts.get(receiptKey),replayed:true};else if(cacheable&&readCache.has(readKey))result={...readCache.get(readKey),cached:true};else{if(name==='evaluate_design')onEvent({type:'stage',stage:'evaluating',label:'核对变更与实际运行状态'});result=await engine.execute(name,args);}}
+     if(name==='plan_design'&&result.ok)onEvent({type:'brief',brief:engine.brief});if(name==='evaluate_design'&&result.ok)onEvent({type:'evaluation',report:result});
+     const safeResult=boundReceipt(redactForModel(result,0,name==='read_code_file'?16000:4000));if(result.ok){if(!dynamic)receipts.set(receiptKey,safeResult);if(cacheable)readCache.set(readKey,safeResult);}onEvent({type:'tool-result',id,name,ok:result.ok,result:safeResult,duration:Math.round(performance.now()-start)});messages.push({role:'tool',tool_call_id:call.id,content:JSON.stringify(safeResult)});
+    }
+    await publish();await checkpoint();continue;
+   }
+   const verifiedNoop=engine.mode==='refine'&&engine.report?.passed&&engine.brief?.checks?.length>0;
+   if(!engine.modified&&!engine.noops&&!verifiedNoop){if(++forced>1)throw Error('模型尚未执行实际设计修改，已有作品保持不变');messages.push({role:'user',content:'请实际使用工具完成要求，不能只提供建议。若目标已经满足，可执行对应修改工具确认无需变更。'});continue;}
+   let report=engine.report;if(!report||Date.now()-report.checkedAt>2500){onEvent({type:'stage',stage:'evaluating',label:'检查交付质量'});report=await engine.execute('evaluate_design',{});onEvent({type:'evaluation',report});}
+   if(!deliverySummary)deliverySummary=lastText;
+   const actionable=report.errors.length||report.warnings.some(w=>!baselineWarnings.has(JSON.stringify([w.code,w.nodeId,w.message]))&&['bounds','overlap','field','text-overflow','title','fps','asset','scene-error','unit-mismatch'].includes(w.code));
+   if(actionable&&repairs<2){repairs++;onEvent({type:'stage',stage:'repairing',label:'根据反馈修正 · '+repairs+'/2'});messages.push({role:'user',content:'请修复本次新增问题后再次 evaluate_design。尊重 targetIds、锁定对象与保留约束；渲染仍在加载时先 inspect_runtime，不要删除组件规避问题。最终说明汇总本轮全部已完成内容。'+JSON.stringify(report)});continue;}
+   await publish();onEvent({type:'stage',stage:'complete',label:report.errors.length?'草稿已保留，仍有问题待修正':engine.modified?'检查完成，准备自动应用':'目标已经满足，无需修改'});return finish(report,!engine.modified);
+  }
+  throw Error('本轮达到模型调用预算，完成的草稿已保留，可继续完成');
+ }catch(error){
+  if(engine.modified){try{await publish()}catch{}let report=evaluateProject(engine.project,{},engine.brief?.checks);if(!signal?.aborted)try{report=await engine.execute('evaluate_design',{})}catch{}onEvent({type:'evaluation',report});error.partial={...finish(report),interrupted:true,summary:signal?.aborted?'已停止，完成的部分已保留':error.message};await onCheckpoint(error.partial);}
+  throw error;
+ }
+}
+
+export async function waitForCode({codeNodeId,hash,activation},signal){
+ const start=performance.now();while(performance.now()-start<14000){if(signal?.aborted)throw new DOMException('Aborted','AbortError');const node=[...document.querySelectorAll('[data-node-id]')].find(el=>el.dataset.nodeId===codeNodeId),el=node?.querySelector('[data-code-state]');if(el?.dataset.codeHash===hash&&(!activation||el.dataset.codeActivation===activation)){if(el.dataset.codeState==='error')return {code:{state:'error',message:el.dataset.codeError}};if(el.dataset.codeState==='ready'){let stats={};try{stats=JSON.parse(el.dataset.codeStats||'{}')}catch{}return {code:{state:'ready',stats,diagnostics:[]}};}}await sleep(80,signal);}return {code:{state:'error',message:'等待本次代码实际运行超时，请减少构建复杂度后重试'}};
+}

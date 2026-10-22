@@ -59,10 +59,12 @@ Each 3D component supports up to 64 added objects. The built-in world remains a 
 
 ![Actual tool execution and delivery checks](docs/screenshots/agent-copilot.webp)
 
-Open **智能创作** to describe your business, visual direction, metrics and scene. The model automatically decides whether to create a new dashboard or refine the current one from your request and canvas context; no manual mode switch is needed. The agent uses **26 tools** to create editable dashboards or refine the current screen / selected components, including headers, charts, existing 3D scenes, materials and interactive annotations.
+Open **智能创作** to describe your business, visual direction, metrics and scene. The model automatically decides whether to create a new dashboard or refine the current one from your request and canvas context; no manual mode switch is needed. The agent uses **32 tools** to create editable dashboards or refine the current screen / selected components, including headers, charts, existing 3D scenes, materials and interactive annotations.
 
 - **Execute → feedback → evaluate → repair**: inspect real arguments, results, timings and failures. Checks include DOM rendering, text overflow, bounds, data fields, interaction references and Three.js telemetry, with limits of 16 model rounds and 2 repair rounds.
 - **Automatic application and continued editing**: tools first work in an isolated preview, then apply a completed, validated result automatically as one undoable edit per turn. Follow-up changes use the latest complete screen, including a recovered unapplied draft. Selection scope and locked objects are protected; runtime errors or manual-edit conflicts retain the draft without overwriting the canvas.
+- **Precise tools and checks**: batch component queries, scene inspection, duplication, scene-object removal, live runtime inspection and change manifests. Scoped plans restrict target IDs and declare removals; acceptance checks can verify titles, properties and component counts.
+- **Recover and continue**: completed tool rounds are checkpointed locally; resume after a refresh or retry model failures. Delivery shows added, updated, removed and retained components with one-click per-turn undo. Bounded transcripts and batched preview updates reduce repeated work.
 - **Configurable providers**: OpenRouter / `anthropic/claude-haiku-5.5` by default, plus DeepSeek, Qwen, GLM, Kimi, Doubao, SiliconFlow, MiniMax, OpenAI, Anthropic, Gemini and custom HTTPS-compatible endpoints. Refresh available models or enter an ID and test actual function calling. Other providers require their own keys and tool-capable models.
 - **Server-side credentials**: the shared default is restricted to the workspace owner. Personal profiles are isolated per account and encrypted with AES-GCM in D1; provider keys never enter client bundles, project JSON or exports. A changed provider host requires a new key.
 
@@ -71,6 +73,8 @@ The score measures structural and runtime checks, not screenshot aesthetics. Unc
 For local development, copy `.dev.vars.example` to `.dev.vars`, set `AGENT_DEFAULT_API_KEY`, `AGENT_DEFAULT_MODEL` and a stable 64-character hexadecimal `AGENT_ENCRYPTION_KEY`, then run `npm run dev`. Production requires server runtime secrets and `AGENT_DEFAULT_OWNER_ID` or `AGENT_DEFAULT_OWNER_EMAIL`, with Sites authentication. Never put credentials in `VITE_*` variables. Rotating the encryption key requires re-saving personal provider keys.
 
 GitHub Pages remains a static editor. **携带项目打开智能创作** transfers the current project, prompt and local assets (100 MB total limit) to the full service through an origin-checked window bridge. The full service preserves the previous project and requires sign-in; receiving a project does not automatically make a paid model call.
+
+[Workflow audit, verification evidence and remaining boundaries](docs/agent-workflow-audit.md).
 
 ## Code Studio · Frontend programming workspace
 

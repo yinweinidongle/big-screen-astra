@@ -10,7 +10,7 @@
     "dev:server": "wrangler dev --local --config wrangler.local.json --port 8787 --var LOCAL_DEV:true",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply DB --local --config wrangler.local.json",
-    "test": "node scripts/verify-workbench.mjs && node scripts/verify-agent.mjs && node scripts/verify-agent-continuity.mjs && node scripts/verify-code.mjs && node scripts/verify-agent-server.mjs && node scripts/verify-sector-scenes.mjs && node scripts/verify-scene-editor.mjs && node scripts/verify-server.mjs && node scripts/verify-studio.mjs && node scripts/verify-header-bridge.mjs && node scripts/verify-trimming.mjs",
+    "test": "node scripts/verify-workbench.mjs && node scripts/verify-agent.mjs && node scripts/verify-agent-continuity.mjs && node scripts/verify-agent-workflow.mjs && node scripts/verify-code.mjs && node scripts/verify-agent-server.mjs && node scripts/verify-sector-scenes.mjs && node scripts/verify-scene-editor.mjs && node scripts/verify-server.mjs && node scripts/verify-studio.mjs && node scripts/verify-header-bridge.mjs && node scripts/verify-trimming.mjs",
     "build:pages": "node scripts/build-pages.mjs",
     "preview:pages": "vite preview --outDir dist/pages --host 127.0.0.1"
   },

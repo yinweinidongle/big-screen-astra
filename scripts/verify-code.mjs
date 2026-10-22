@@ -30,3 +30,10 @@ let r=await engine.execute('write_code_files',{id:scene.id,files:[{path:'main.js
 console.log('Code workspaces: actual SES execution, JS/GLSL modules, animation patches, scope-safe file tools, diagnostics, checkpoints, execution budgets, denied network/global access, isolated frontend document and failed-build rollback passed.');
 
 let posted;const entry={pending:false,worker:{postMessage:value=>{posted=structuredClone(value);}}};SceneCodeLayer.prototype.event.call({active:entry,generation:1,fail(){assert.fail('Event dispatch must accept reactive POI rows');}},reactive({kind:'click',poi:{rows:[{label:'State',value:'Online'}]}}));clearTimeout(entry.timer);assert.equal(posted.event.poi.rows[0].value,'Online');assert.deepEqual(p.event({kind:'click'}).changes,[]);console.log('Code interactions: reactive POI payload cloning and optional event handlers passed.');
+
+const stable=createSceneProgram(source('export function build(THREE){const root=new THREE.Group();root.add(new THREE.Mesh(new THREE.BoxGeometry(),new THREE.MeshBasicMaterial()));return {root,update(){}};}'),{},Compartment);stable.update(0,0);assert.deepEqual(stable.update(1,.016).materials,[],'Unchanged material state must not cross the Worker boundary');
+assert.throws(()=>createSceneProgram(source('export function build(THREE){const root=new THREE.Group();root.add(new THREE.InstancedMesh(new THREE.SphereGeometry(1,64,64),new THREE.MeshBasicMaterial(),100));return root;}'),{},Compartment),/500,000/);
+assert.throws(()=>createSceneProgram(source('export function build(THREE){const root=new THREE.Group();root.position.x=Infinity;return root;}'),{},Compartment),/无效变换/);
+for(const shader of ['void main(){for(int i=0;i<64;i--){}}','void main(){for(int i=0;i<4;i++){i=0;}}','void main(){for(int i=0;i<64;i++){for(int j=0;j<64;j++){}}}'])assert.throws(()=>checkShader(shader));
+assert(checkShader('void main(){for(int i=0;i<4;i++){for(int j=0;j<4;j++){float x=float(i+j);}}}'));
+console.log('GPU budgets: actual instanced triangle counts, finite transforms, bounded shader iteration and unchanged material transfer suppression passed.');
