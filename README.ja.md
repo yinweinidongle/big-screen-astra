@@ -12,7 +12,7 @@
 
 </div>
 
-![都市・農業・工業・キャンパス、異なる4つの業界テンプレート](docs/screenshots/overview.webp)
+![都市・農業・工業・キャンパス・衛星地図・中国 3D ベクトル地図、6つの大画面テンプレート](docs/screenshots/overview.webp)
 
 ## ひとつの指示から、編集可能な大画面へ。
 
@@ -73,18 +73,7 @@
 
 ## 業界テンプレート
 
-[都市](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [農業](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [工業](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [キャンパス](https://yinweinidongle.github.io/big-screen-astra/templates/campus/)
-
-<table>
-<tr>
-<td width="50%"><img src="docs/screenshots/gis.webp" alt="衛星地図ダッシュボード：衛星画像、水域観測点、水質グラフ" /></td>
-<td width="50%"><img src="docs/screenshots/regions.webp" alt="中国の 3D ベクトル地図：立体的な省級行政区、地域ラベル、巡回点検指標" /></td>
-</tr>
-<tr>
-<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/gis/">衛星地図</a><br /><sub>Leaflet · 衛星画像 · 観測点の操作</sub></td>
-<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/regions/">中国 3D ベクトル地図</a><br /><sub>Three.js · 立体行政区 · 地域フォーカス</sub></td>
-</tr>
-</table>
+[都市](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [農業](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [工業](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [キャンパス](https://yinweinidongle.github.io/big-screen-astra/templates/campus/) · [衛星地図](https://yinweinidongle.github.io/big-screen-astra/templates/gis/) · [中国 3D ベクトル地図](https://yinweinidongle.github.io/big-screen-astra/templates/regions/)
 
 ## クイックスタート
 
