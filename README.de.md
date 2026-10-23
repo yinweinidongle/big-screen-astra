@@ -94,4 +94,4 @@ Copilot verbinden: `.dev.vars.example` nach `.dev.vars` kopieren und Modell-API-
 
 ---
 
-[MIT](LICENSE) · [Hinweise zu Drittanbietern](THIRD_PARTY_NOTICES.md)
+[MIT](LICENSE) · [Hinweise zu Drittanbietern](THIRD_PARTY_NOTICES.md) · [Lizenzen der Kartendaten](public/assets/maps/ATTRIBUTION.md)

@@ -1,3 +1,6 @@
+import {localizedCompletion} from './reply-language.js';
+import {replyLanguage} from '../src/workbench/agent/language.js';
+import {consumeCompletionStream,completionResponse} from './agent-stream.js';
 import {providers,providerById,DEFAULT_MODEL} from '../src/workbench/agent/providers.js';
 import {toolDefinitions} from '../src/workbench/agent/contracts.js';
 import {DESIGN_SYSTEM_PROMPT} from '../src/workbench/agent/prompt.js';
@@ -22,7 +25,7 @@ async function boundedText(response,max){
  const reader=response.body?.getReader();if(!reader)return '';const decoder=new TextDecoder();let text='',bytes=0;
  try{while(true){const {done,value}=await reader.read();if(done)break;bytes+=value.byteLength;if(bytes>max){await reader.cancel();fail('模型响应过大，请减少单次输出',502,'PROVIDER_RESPONSE_TOO_LARGE');}text+=decoder.decode(value,{stream:true});}return text+decoder.decode();}finally{reader.releaseLock();}
 }
-async function fetchJson(url,options){
+async function fetchProvider(url,options){
  let response;try{response=await fetch(url,{...options,redirect:'manual'});}catch{if(options.signal?.aborted)fail('模型请求已停止或超时，可继续完成草稿',504,'PROVIDER_TIMEOUT');fail('模型接口连接失败，请检查网络与接口地址',502,'PROVIDER_NETWORK');}
  if(!response.ok){const status=response.status,retryAfter=Math.min(60,Math.max(1,Number(response.headers.get('Retry-After'))||2));try{await response.body?.cancel()}catch{}
   if(status===401||status===403)fail('模型鉴权失败，请在模型设置中检查该厂商的 API Key',422,'PROVIDER_AUTH');
@@ -32,14 +35,22 @@ async function fetchJson(url,options){
   if(status===429)fail('模型厂商限流，请稍后继续完成草稿',429,'PROVIDER_RATE_LIMIT',retryAfter);
   fail('模型接口暂时不可用（HTTP '+status+'）',502,'PROVIDER_UNAVAILABLE');
  }
+ return response;
+}
+async function fetchJson(url,options){
+ const response=await fetchProvider(url,options);
  const content=await boundedText(response,2*1024*1024);try{return JSON.parse(content)}catch{fail('模型返回的内容不是有效 JSON',502,'PROVIDER_JSON');}
 }
-export async function modelCompletion(profile,messages,signal,{test=false}={}){
+export async function modelCompletion(profile,messages,signal,{test=false,finalOnly=false,maxOutputTokens,onDelta,onReset}={}){
  const tools=test?[{type:'function',function:{name:'connection_check',description:'确认工具调用兼容',parameters:{type:'object',properties:{},additionalProperties:false}}}]:toolDefinitions;
- const maxTokens=test?128:8000,anthropic=profile.protocol==='anthropic',url=profile.baseUrl+(anthropic?'/messages':'/chat/completions');
+ const maxTokens=test?128:maxOutputTokens|| (finalOnly?1200:8000),anthropic=profile.protocol==='anthropic',url=profile.baseUrl+(anthropic?'/messages':'/chat/completions');
  const request=anthropic?anthropicRequest(messages,tools,profile.model,maxTokens):{model:profile.model,messages,tools,...(profile.provider==='openai'||profile.id==='openai'?{max_completion_tokens:maxTokens}:{max_tokens:maxTokens}),tool_choice:test?{type:'function',function:{name:'connection_check'}}:'auto',...(profile.id==='openrouter'||profile.provider==='openrouter'?{reasoning:{effort:'low',exclude:true}}:{})};
+ if(finalOnly){if(anthropic){request.tool_choice={type:'none'};}else request.tool_choice='none';}
+ if(onDelta){request.stream=true;if(!anthropic)request.stream_options={include_usage:true};}
  if(test&&anthropic)request.tool_choice={type:'tool',name:'connection_check'};
- const data=await fetchJson(url,{method:'POST',headers:{'Content-Type':'application/json',...(anthropic?{'x-api-key':profile.key,'anthropic-version':'2023-06-01'}:{Authorization:'Bearer '+profile.key}),...((profile.id==='openrouter'||profile.provider==='openrouter')?{'HTTP-Referer':'https://yinweinidongle.github.io/big-screen-astra/','X-Title':'Astra Studio'}:{})},body:JSON.stringify(request),signal});
+ const response=await fetchProvider(url,{method:'POST',headers:{'Content-Type':'application/json',...(anthropic?{'x-api-key':profile.key,'anthropic-version':'2023-06-01'}:{Authorization:'Bearer '+profile.key}),...((profile.id==='openrouter'||profile.provider==='openrouter')?{'HTTP-Referer':'https://yinweinidongle.github.io/big-screen-astra/','X-Title':'Astra Studio'}:{})},body:JSON.stringify(request),signal});
+ if(onDelta&&response.headers.get('content-type')?.includes('text/event-stream'))return consumeCompletionStream(response,{anthropic,onDelta,onReset,signal});
+ let data;try{data=JSON.parse(await boundedText(response,2*1024*1024));}catch(e){if(e.status)throw e;fail('模型没有返回有效回复',502,'PROVIDER_JSON');}
  if(anthropic){const content=data.content||[];return {message:{role:'assistant',content:content.filter(c=>c.type==='text').map(c=>c.text).join('\n'),tool_calls:content.filter(c=>c.type==='tool_use').map(c=>({id:c.id,type:'function',function:{name:c.name,arguments:JSON.stringify(c.input)}}))},usage:{input_tokens:data.usage?.input_tokens||0,output_tokens:data.usage?.output_tokens||0},finishReason:data.stop_reason};}
  const msg=data.choices?.[0]?.message;if(!msg)fail('模型没有返回可用的回复',502);return {message:{role:'assistant',content:typeof msg.content==='string'?msg.content:'',...reasoningSignature(msg),tool_calls:(msg.tool_calls||[]).map(c=>({id:c.id,type:'function',...toolSignature(c),function:{name:c.function?.name,arguments:typeof c.function?.arguments==='string'?c.function.arguments:JSON.stringify(c.function?.arguments||{})}}))},usage:{input_tokens:data.usage?.prompt_tokens||0,output_tokens:data.usage?.completion_tokens||0},finishReason:data.choices?.[0]?.finish_reason};
 }
@@ -61,6 +72,6 @@ export async function agentApi(request,env,user){if(!user)return json({error:'�
  if(path==='/api/agent/models'){const d=await fetchJson(p.baseUrl+'/models',{headers:p.protocol==='anthropic'?{'x-api-key':p.key,'anthropic-version':'2023-06-01'}:{Authorization:'Bearer '+p.key},signal});const models=(d.data||d.models||[]).filter(m=>!m.supported_parameters||m.supported_parameters.includes('tools')).map(m=>({id:m.id||m.name,name:m.name||m.display_name||m.id,tools:m.supported_parameters?m.supported_parameters.includes('tools'):null})).slice(0,1000);return json({models});}
  await rateLimit(env.DB,user);
  if(path==='/api/agent/test'){const result=await modelCompletion(p,[{role:'user',content:'请调用 connection_check 确认函数工具可用。'}],signal,{test:true});return json({ok:result.message.tool_calls.some(c=>c.function.name==='connection_check'),model:p.model,provider:p.provider||p.id,usage:result.usage});}
- if(path==='/api/agent/chat'){const messages=normalizeMessages(input.messages);const result=await modelCompletion(p,[{role:'system',content:DESIGN_SYSTEM_PROMPT},...messages],signal);return json({...result,model:p.model});}
+ if(path==='/api/agent/chat'){const messages=normalizeMessages(input.messages);const latestUser=[...messages].reverse().find(m=>m.role==='user'),requestedReplyLanguage=input.replyLanguage||replyLanguage(latestUser?.content||'');if(latestUser)latestUser.content+='\n\n<astra_reply_preferences>请回答以上请求。默认使用简体中文；只有以上请求明确要求用其他语言回复时才切换。历史答复或问题本身使用外语不代表要求用外语回复。</astra_reply_preferences>';const context=[{role:'system',content:DESIGN_SYSTEM_PROMPT+'\n回复语言：默认简体中文。仅当最新用户请求明确指定其他语言时才切换。回复只描述已验证的实际结果。'+(input.finalOnly===true?'\n本轮工具已完成，不能再调用工具。只用 1–3 句总结实际修改内容和重要未解决问题；不复述保留数量或评估过程，不展示计划、分数、工具名、卡片或 JSON。不要宣称宿主已经保存；通过检查后会自动应用。':'')},...messages];const requireChinese=requestedReplyLanguage!=='follow-user',complete=options=>localizedCompletion((messages,completionOptions)=>modelCompletion(p,messages,options.signal||signal,completionOptions),context,{...options,requireChinese,finalOnly:input.finalOnly===true});if(input.stream===true)return completionResponse(complete,p.model,signal);const result=await complete({signal});return json({...result,model:p.model});}
  fail('智能体接口不存在',404);
  }catch(e){return json({error:e.status?e.message:'智能体服务暂时不可用，请重试',code:e.code||'AGENT_ERROR',...(e.retryAfter?{retryAfter:e.retryAfter}:{})},e.status||500);}}

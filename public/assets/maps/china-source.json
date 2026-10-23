@@ -1,0 +1,9 @@
+{
+  "boundaryID": "CHN-ADM1-43563684",
+  "boundaryName": "China",
+  "boundaryYearRepresented": "2019",
+  "boundaryLicense": "Public Domain",
+  "boundarySource": "geoBoundaries, Wikimedia Commons",
+  "licenseDetail": "nan",
+  "simplifiedGeometryGeoJSON": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/CHN/ADM1/geoBoundaries-CHN-ADM1_simplified.geojson"
+}

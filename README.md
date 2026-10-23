@@ -94,4 +94,4 @@ npm run dev
 
 ---
 
-[MIT](LICENSE) · [第三方声明](THIRD_PARTY_NOTICES.md)
+[MIT](LICENSE) · [第三方声明](THIRD_PARTY_NOTICES.md) · [地图数据授权](public/assets/maps/ATTRIBUTION.md)

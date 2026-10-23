@@ -94,4 +94,4 @@ Connect Copilot: copy `.dev.vars.example` to `.dev.vars`, then configure your mo
 
 ---
 
-[MIT](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md)
+[MIT](LICENSE) · [Third-party notices](THIRD_PARTY_NOTICES.md) · [Map data licenses](public/assets/maps/ATTRIBUTION.md)

@@ -6,15 +6,24 @@ const groups={layout:['x','y','w','h','rotation','visible','group'],content:['na
 const semantic=(key,value)=>{if(key!=='props'||!value?.codeWorkspace)return value;const {activation,checkpoints,...workspace}=value.codeWorkspace;return {...value,codeWorkspace:workspace};};
 
 export function designChanges(before,after){
- const old=new Map(before.nodes.map(n=>[n.id,n])),next=new Map(after.nodes.map(n=>[n.id,n]));
+ const createdProject=before.id!==after.id,old=new Map((createdProject?[]:before.nodes).map(n=>[n.id,n])),next=new Map(after.nodes.map(n=>[n.id,n]));
  const added=[],updated=[],removed=[];
  for(const n of after.nodes){const previous=old.get(n.id);if(!previous){added.push(nodeInfo(n));continue;}if(previous===n)continue;
   const fields=Object.entries(groups).filter(([,keys])=>keys.some(k=>!equal(semantic(k,previous[k]),semantic(k,n[k])))).map(([name])=>name);
   if(fields.length)updated.push({...nodeInfo(n),fields});
  }
- for(const n of before.nodes)if(!next.has(n.id))removed.push(nodeInfo(n));
+ if(!createdProject)for(const n of before.nodes)if(!next.has(n.id))removed.push(nodeInfo(n));
  const settings=['name','width','height','theme','fit','background','filters','variables','assets'].filter(k=>!equal(before[k],after[k]));
- return {changed:before.id!==after.id||!!(added.length+updated.length+removed.length+settings.length),createdProject:before.id!==after.id,added,updated,removed,settings,retained:after.nodes.length-added.length-updated.length,counts:{added:added.length,updated:updated.length,removed:removed.length,total:after.nodes.length}};
+ return {changed:before.id!==after.id||!!(added.length+updated.length+removed.length+settings.length),createdProject,added,updated,removed,settings,retained:after.nodes.length-added.length-updated.length,counts:{added:added.length,updated:updated.length,removed:removed.length,total:after.nodes.length}};
+}
+
+export function validateAcceptanceChecks(checks=[]){
+ for(const c of checks){
+  if(c.kind==='count'&&(!Number.isInteger(c.value)||c.value<1||c.value>200))throw Error('count 验收值必须是 1–200 的整数；新建前未知最终数量时请省略此检查');
+  if(c.kind==='exists'&&(!c.id||typeof c.value!=='boolean'))throw Error('exists 验收必须提供真实组件 id，value 必须是 true 或 false，不能是 null');
+  if(c.kind==='title'&&typeof c.value!=='string')throw Error('title 验收值必须是标题字符串');
+  if(c.kind==='prop'&&(!c.id||!c.key))throw Error('prop 验收必须提供真实组件 id 和属性 key');
+ }
 }
 
 export function checkAcceptance(project,checks=[]){

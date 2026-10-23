@@ -15,7 +15,7 @@ export function prepareAgentTurn({project,revision,result,applied=false,baseRevi
 // Resuming can finish with no further edits. The pending work still differs
 // from the original canvas and must remain available for application/undo.
 export function finishAgentTurn(turn,result){
- if(!turn.continuing)return result;
+ if(result.kind==='conversation'||!turn.continuing)return result;
  const changes=designChanges(turn.origin,result.project);
  return {...result,changes,modified:changes.changed,noChange:!changes.changed};
 }

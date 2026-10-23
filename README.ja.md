@@ -94,4 +94,4 @@ Copilot の接続：`.dev.vars.example` を `.dev.vars` にコピーし、モデ
 
 ---
 
-[MIT](LICENSE) · [サードパーティー表記](THIRD_PARTY_NOTICES.md)
+[MIT](LICENSE) · [サードパーティー表記](THIRD_PARTY_NOTICES.md) · [地図データのライセンス](public/assets/maps/ATTRIBUTION.md)
