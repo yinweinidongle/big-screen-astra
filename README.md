@@ -75,6 +75,17 @@
 
 [智慧城市](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [智慧农业](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [智慧工业](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [智慧园区](https://yinweinidongle.github.io/big-screen-astra/templates/campus/)
 
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/gis.webp" alt="卫星地图大屏：真实卫星影像、水域监测点与水质分析" /></td>
+<td width="50%"><img src="docs/screenshots/regions.webp" alt="中国矢量 3D 地图大屏：省级行政区挤出、区域标签与巡检调度" /></td>
+</tr>
+<tr>
+<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/gis/">卫星地图</a><br /><sub>Leaflet · 卫星影像 · 监测点交互</sub></td>
+<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/regions/">中国矢量 3D 地图</a><br /><sub>Three.js · 立体行政区 · 区域聚焦</sub></td>
+</tr>
+</table>
+
 ## 快速启动
 
 Node.js **22.12+**
