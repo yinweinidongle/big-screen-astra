@@ -5,7 +5,13 @@ export function createPrefab(kind){
  const body=metal('#9db7cc',.3,.6),dark=metal('#263947',.5,.65),glass=metal('#4884a8',.18,.7),trim=glow('#9ae1ee',.5),green=metal('#487b60',.7,.1),amber=metal('#d7a360',.3,.6);
  let animate=()=>{},dynamic=false;
  const box=(x,y,z,w,h,d,m=body,rounded=false)=>b.box(x,y,z,w,h,d,m,rounded);
- if(kind==='tower'){
+ if(kind==='ground'){
+  box(0,-.16,0,100,.3,100,body);root.userData.isGround=true;
+ }else if(kind==='mountains'){
+  const g=new THREE.PlaneGeometry(64,30,48,22),a=g.attributes.position;
+  for(let i=0;i<a.count;i++){const x=a.getX(i),y=a.getY(i),edge=Math.max(0,1-Math.pow(y/15,2));const ridge=(Math.exp(-(((x+19)/9)**2))*11+Math.exp(-(((x-2)/10)**2))*16+Math.exp(-(((x-23)/8)**2))*10);a.setZ(i,Math.max(0,ridge*edge*(.72+.17*Math.sin(x*.55+y*.28)+.1*Math.cos(x*.9-y*.51))));}
+  g.computeVertexNormals();b.add(g,green,0,0,0,[-Math.PI/2,0,0]);
+ }else if(kind==='tower'){
   box(0,.2,0,5.2,.4,4.5,dark);box(0,4,0,4,7.2,3.6,glass);box(0,7.8,0,4.5,.45,4.1,body);box(0,8.15,0,2.4,.4,2,body);box(.8,8.45,0,.7,.25,.8,dark);
   for(let y=1;y<7.8;y+=.7){box(0,y,1.84,4.05,.06,.06,trim);box(0,y,-1.84,4.05,.06,.06,body);box(2.03,y,0,.06,.06,3.7,body);box(-2.03,y,0,.06,.06,3.7,body);}
   for(let x=-1.6;x<2;x+=.8){box(x,4,1.87,.045,7,.04,body);box(x,4,-1.87,.045,7,.04,body);}box(0,.9,1.95,.9,1.4,.2,dark);

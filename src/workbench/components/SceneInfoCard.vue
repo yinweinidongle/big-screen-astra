@@ -1,11 +1,12 @@
 <script setup>
-import {computed} from 'vue';
+import {computed,ref} from 'vue';
 import {X,ArrowUpRight,Focus} from 'lucide-vue-next';
 const props=defineProps({poi:Object});const emit=defineEmits(['close','focus']);
+const card=ref();defineExpose({getElement:()=>card.value});
 const status=computed(()=>({normal:'运行正常',warning:'需要关注',offline:'离线'}[props.poi.status]||'运行正常'));
 const link=computed(()=>/^https?:\/\//i.test(props.poi.link||'')?props.poi.link:'');
 </script>
-<template><section class="aw-poi-card ase-info-card" :class="['info-'+(poi.style||'glass'),'status-'+(poi.status||'normal')]" :style="{'--poi-color':poi.color||'#9ccdeb'}" role="dialog" :aria-label="poi.name+'详情'" @pointerdown.stop @click.stop>
+<template><section ref="card" class="aw-poi-card ase-info-card" :class="['info-'+(poi.style||'glass'),'status-'+(poi.status||'normal')]" :style="{'--poi-color':poi.color||'#9ccdeb'}" role="dialog" :aria-label="poi.name+'详情'" @pointerdown.stop @click.stop>
  <header><span>SPATIAL INSIGHT <i>空间信息</i></span><button aria-label="关闭空间信息" @click="emit('close')"><X :size="15"/></button></header>
  <div class="ase-info-title"><i></i><h3>{{poi.name}}</h3><span>{{status}}</span></div>
  <p v-if="poi.description" class="ase-info-description">{{poi.description}}</p>

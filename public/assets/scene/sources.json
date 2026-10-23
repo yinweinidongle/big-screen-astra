@@ -1,0 +1,134 @@
+{
+  "date": "2026-10-23",
+  "licenseNote": "Kenney and Poly Haven assets are CC0-1.0, separate from the MIT project code. Concrete is AI-generated project artwork.",
+  "assets": [
+    {
+      "path": "/assets/scene/textures/tile.webp",
+      "source": "https://polyhaven.com/a/grey_tiles",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/grey_tiles/grey_tiles_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP. Neutral grayscale color correction."
+    },
+    {
+      "path": "/assets/scene/textures/wood.webp",
+      "source": "https://polyhaven.com/a/wood_floor",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor/wood_floor_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP."
+    },
+    {
+      "path": "/assets/scene/textures/wall.webp",
+      "source": "https://polyhaven.com/a/brick_wall_003",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brick_wall_003/brick_wall_003_diffuse_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP."
+    },
+    {
+      "path": "/assets/scene/textures/grass.webp",
+      "source": "https://polyhaven.com/a/leafy_grass",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_diff_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP."
+    },
+    {
+      "path": "/assets/scene/textures/tile-normal.webp",
+      "source": "https://polyhaven.com/a/grey_tiles",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/grey_tiles/grey_tiles_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP."
+    },
+    {
+      "path": "/assets/scene/textures/wood-normal.webp",
+      "source": "https://polyhaven.com/a/wood_floor",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_floor/wood_floor_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP."
+    },
+    {
+      "path": "/assets/scene/textures/wall-normal.webp",
+      "source": "https://polyhaven.com/a/brick_wall_003",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brick_wall_003/brick_wall_003_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP."
+    },
+    {
+      "path": "/assets/scene/textures/grass-normal.webp",
+      "source": "https://polyhaven.com/a/leafy_grass",
+      "download": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/leafy_grass/leafy_grass_nor_gl_1k.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 512px and encoded as WebP."
+    },
+    {
+      "path": "/assets/scene/skies/rainy.webp",
+      "source": "https://polyhaven.com/a/overcast_soil_puresky",
+      "download": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/overcast_soil_puresky.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 2048×1024, encoded as WebP; rainy variant is darkened and desaturated. Upper sky hemisphere mirrored below the horizon for all-angle orbit views."
+    },
+    {
+      "path": "/assets/scene/skies/sunny.webp",
+      "source": "https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky",
+      "download": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/kloofendal_48d_partly_cloudy_puresky.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 2048×1024, encoded as WebP; rainy variant is darkened and desaturated. Upper sky hemisphere mirrored below the horizon for all-angle orbit views."
+    },
+    {
+      "path": "/assets/scene/skies/overcast.webp",
+      "source": "https://polyhaven.com/a/kloofendal_overcast_puresky",
+      "download": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/kloofendal_overcast_puresky.jpg",
+      "license": "CC0-1.0",
+      "transform": "Resized to 2048×1024, encoded as WebP; rainy variant is darkened and desaturated. Upper sky hemisphere mirrored below the horizon for all-angle orbit views."
+    },
+    {
+      "path": "/assets/scene/models/rock.glb",
+      "pack": "nature",
+      "sourceFile": "Models/GLTF format/rock_largeA.glb",
+      "license": "CC0-1.0",
+      "transform": "Palette texture converted to vertex colors; self-contained GLB. Geometry and animation retained.",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "download": "https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip"
+    },
+    {
+      "path": "/assets/scene/models/grass.glb",
+      "pack": "nature",
+      "sourceFile": "Models/GLTF format/grass_large.glb",
+      "license": "CC0-1.0",
+      "transform": "Palette texture converted to vertex colors; self-contained GLB. Geometry and animation retained.",
+      "source": "https://kenney.nl/assets/nature-kit",
+      "download": "https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip"
+    },
+    {
+      "path": "/assets/scene/models/car.glb",
+      "pack": "car",
+      "sourceFile": "Models/GLB format/sedan.glb",
+      "license": "CC0-1.0",
+      "transform": "Palette texture converted to vertex colors; self-contained GLB. Geometry and animation retained.",
+      "source": "https://kenney.nl/assets/car-kit",
+      "download": "https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip"
+    },
+    {
+      "path": "/assets/scene/models/truck.glb",
+      "pack": "car",
+      "sourceFile": "Models/GLB format/delivery.glb",
+      "license": "CC0-1.0",
+      "transform": "Palette texture converted to vertex colors; self-contained GLB. Geometry and animation retained.",
+      "source": "https://kenney.nl/assets/car-kit",
+      "download": "https://kenney.nl/media/pages/assets/car-kit/1a312ec241-1775131960/kenney_car-kit.zip"
+    },
+    {
+      "path": "/assets/scene/models/person.glb",
+      "pack": "people",
+      "sourceFile": "Models/GLB format/character-male-a.glb",
+      "license": "CC0-1.0",
+      "transform": "Palette texture converted to vertex colors; self-contained GLB. Geometry and animation retained.",
+      "source": "https://kenney.nl/assets/mini-characters",
+      "download": "https://kenney.nl/media/pages/assets/mini-characters/bfc7e272b4-1774770718/kenney_mini-characters.zip"
+    },
+    {
+      "path": "/assets/scene/textures/concrete.webp",
+      "generator": "OpenAI image_gen built-in tool",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless tileable PBR base-color texture for a Three.js ground material, square 1024x1024. Primary request: fine pale gray poured concrete / cement floor, realistic tiny mineral aggregates and subtle mottling, uniform neutral daylight albedo, orthographic perfectly top-down, no perspective, no directional lighting or shadows, seamless on all four edges, flat surface. No text, no border, no objects, no cracks, no logos, no vignette. Suitable for repeating across a large industrial digital-twin ground plane. Restrained premium architectural material.",
+      "transform": "Resized to 512×512 and encoded as WebP."
+    }
+  ]
+}
