@@ -12,7 +12,7 @@ Build interactive 3D data dashboards with natural language.
 
 </div>
 
-![Four distinct templates: city, agriculture, industry and campus](docs/screenshots/overview.webp)
+![Six dashboard templates: city, agriculture, industry, campus, satellite map and China 3D vector map](docs/screenshots/overview.webp)
 
 ## One prompt. An editable dashboard.
 
@@ -73,18 +73,7 @@ Graphite, amber alloy and blue glass. Positions and labels stay in place.
 
 ## Industry templates
 
-[Smart City](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Agriculture](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [Industry](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [Campus](https://yinweinidongle.github.io/big-screen-astra/templates/campus/)
-
-<table>
-<tr>
-<td width="50%"><img src="docs/screenshots/gis.webp" alt="Satellite dashboard with live imagery, water monitoring stations and water quality charts" /></td>
-<td width="50%"><img src="docs/screenshots/regions.webp" alt="3D vector map of China with extruded provinces, regional labels and inspection metrics" /></td>
-</tr>
-<tr>
-<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/gis/">Satellite Map</a><br /><sub>Leaflet · Satellite imagery · Interactive stations</sub></td>
-<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/regions/">China 3D Vector Map</a><br /><sub>Three.js · Extruded regions · Regional focus</sub></td>
-</tr>
-</table>
+[Smart City](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Agriculture](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [Industry](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [Campus](https://yinweinidongle.github.io/big-screen-astra/templates/campus/) · [Satellite Map](https://yinweinidongle.github.io/big-screen-astra/templates/gis/) · [China 3D Vector Map](https://yinweinidongle.github.io/big-screen-astra/templates/regions/)
 
 ## Quick start
 

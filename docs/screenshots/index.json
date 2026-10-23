@@ -14,10 +14,30 @@
     "industry.webp",
     "campus.webp",
     "scene-editor.webp",
-    "scene-panel.webp"
+    "scene-panel.webp",
+    "gis.webp",
+    "regions.webp"
   ],
   "scene_editor_viewport": {
     "width": 1280,
     "height": 720
+  },
+  "map_template_viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "overview": {
+    "columns": 2,
+    "rows": 3,
+    "width": 1920,
+    "height": 1620,
+    "templates": [
+      "city",
+      "agriculture",
+      "industry",
+      "campus",
+      "gis",
+      "regions"
+    ]
   }
 }
