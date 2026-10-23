@@ -75,6 +75,17 @@ Graphit, Bernsteinlegierung und blaues Glas. Positionen und Beschriftungen bleib
 
 [Smart City](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Landwirtschaft](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [Industrie](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [Campus](https://yinweinidongle.github.io/big-screen-astra/templates/campus/)
 
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/gis.webp" alt="Satelliten-Dashboard mit Satellitenbildern, Messstationen und Diagrammen zur Wasserqualität" /></td>
+<td width="50%"><img src="docs/screenshots/regions.webp" alt="3D-Vektorkarte Chinas mit extrudierten Provinzen, regionalen Beschriftungen und Inspektionskennzahlen" /></td>
+</tr>
+<tr>
+<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/gis/">Satellitenkarte</a><br /><sub>Leaflet · Satellitenbilder · Interaktive Messstationen</sub></td>
+<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/regions/">3D-Vektorkarte Chinas</a><br /><sub>Three.js · Extrudierte Regionen · Regionaler Fokus</sub></td>
+</tr>
+</table>
+
 ## Schnellstart
 
 Node.js **22.12+**

@@ -75,6 +75,17 @@ Graphite, amber alloy and blue glass. Positions and labels stay in place.
 
 [Smart City](https://yinweinidongle.github.io/big-screen-astra/templates/city/) · [Agriculture](https://yinweinidongle.github.io/big-screen-astra/templates/agriculture/) · [Industry](https://yinweinidongle.github.io/big-screen-astra/templates/industry/) · [Campus](https://yinweinidongle.github.io/big-screen-astra/templates/campus/)
 
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/gis.webp" alt="Satellite dashboard with live imagery, water monitoring stations and water quality charts" /></td>
+<td width="50%"><img src="docs/screenshots/regions.webp" alt="3D vector map of China with extruded provinces, regional labels and inspection metrics" /></td>
+</tr>
+<tr>
+<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/gis/">Satellite Map</a><br /><sub>Leaflet · Satellite imagery · Interactive stations</sub></td>
+<td align="center"><a href="https://yinweinidongle.github.io/big-screen-astra/templates/regions/">China 3D Vector Map</a><br /><sub>Three.js · Extruded regions · Regional focus</sub></td>
+</tr>
+</table>
+
 ## Quick start
 
 Node.js **22.12+**
