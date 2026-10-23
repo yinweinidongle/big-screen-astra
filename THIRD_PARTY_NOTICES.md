@@ -20,7 +20,9 @@ The MIT license in `LICENSE` applies to this project's original code and documen
 | Natural Earth land geometry | Public domain; https://www.naturalearthdata.com/about/terms-of-use/ |
 | Google Fonts, when loaded | Font-specific licenses apply; see each font's Google Fonts entry. System font fallbacks are provided. |
 
-`public/assets/world-land.geojson` is derived from Natural Earth's 110m land geometry. Model and scene geometry elsewhere is procedural concept geometry, not a surveying dataset.
+`public/assets/world-land.geojson` is derived from Natural Earth's 110m land geometry. Built-in city and industrial scene geometry is procedural concept geometry, not a surveying dataset.
+
+Scene Studio includes CC0 assets from [Kenney Nature Kit](https://kenney.nl/assets/nature-kit), [Car Kit](https://kenney.nl/assets/car-kit), [Mini Characters](https://kenney.nl/assets/mini-characters), and [Poly Haven](https://polyhaven.com/license). Five selected GLB models are included with palette textures converted to vertex colors; geometry and animation are retained. Source licenses are in `public/assets/scene/models/licenses/`. Sky panoramas and surface maps are resized and encoded as WebP; sky lower hemispheres are mirrored for orbit views, and the rainy sky is darkened. These third-party assets retain CC0-1.0 rather than inheriting the project's MIT code license. The concrete texture is AI-generated project artwork. Exact asset sources, modifications and the generation prompt are recorded in [the asset manifest](public/assets/scene/sources.json).
 
 Header and dashboard artwork in `public/assets` includes AI-generated visual assets. Generation prompts and contour-tracing notes are kept in `docs/header-generation.md`, `docs/demo-image-generation.md`, and `docs/studio-header-generation.json`. These assets are artistic illustrations, not factual imagery of operating facilities.
 

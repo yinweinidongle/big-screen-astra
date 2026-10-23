@@ -3,13 +3,15 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {sitePath} from '../../paths.js';
 import {normalizeSceneObjects} from './config.js';
+import {SceneMaterials} from './materials.js';
 import {createPrefab} from './prefabs.js';
+import {MIN_OBJECT_SCALE,MAX_OBJECT_SCALE} from './scaling.js';
 import {disposeObject} from '../runtime/world.js';
 
 export class SceneComposer {
  constructor(scene,{changed=()=>{},status=()=>{},loadModel}={}){
   this.scene=scene;this.changed=changed;this.status=status;this.entries=new Map();this.dead=false;this.time={value:0};
-  this.loader=new GLTFLoader();this.loadModel=loadModel||((url,draco)=>{if(draco){this.draco||=new DRACOLoader();this.draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');this.loader.setDRACOLoader(this.draco);}else this.loader.setDRACOLoader(null);return this.loader.loadAsync(url);});
+  this.materials=new SceneMaterials({time:this.time,changed:this.changed});this.loader=new GLTFLoader();this.loadModel=loadModel||((url,draco)=>{if(draco){this.draco||=new DRACOLoader();this.draco.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');this.loader.setDRACOLoader(this.draco);}else this.loader.setDRACOLoader(null);return this.loader.loadAsync(url);});
  }
  sync(objects,assets={}){
   const configs=normalizeSceneObjects(objects),ids=new Set(configs.map(c=>c.id));
@@ -31,7 +33,7 @@ export class SceneComposer {
     visual.updateWorldMatrix(true,true);const box=new THREE.Box3().setFromObject(visual),size=box.getSize(new THREE.Vector3()),center=box.getCenter(new THREE.Vector3());
     if(box.isEmpty()||!Number.isFinite(size.length())){disposeObject(visual);throw Error('模型中没有可显示的几何体');}
     const fit=new THREE.Group();fit.add(visual);visual.position.sub(new THREE.Vector3(center.x,box.min.y,center.z));fit.scale.setScalar(e.config.fitSize/Math.max(size.x,size.y,size.z,.01));
-    if(gltf.animations?.length){mixer=new THREE.AnimationMixer(visual);gltf.animations.forEach(clip=>mixer.clipAction(clip).play());dynamic=true;}
+    if(gltf.animations?.length){mixer=new THREE.AnimationMixer(visual);const clip=gltf.animations.find(clip=>/idle/i.test(clip.name))||gltf.animations[0];mixer.clipAction(clip).play();dynamic=true;}
     visual=fit;
    }else{const p=createPrefab(e.config.kind==='label'?'label':e.config.preset);visual=p.root;update=p.update;dynamic=p.dynamic;}
    if(e.removed||this.dead){mixer?.stopAllAction();disposeObject(visual);return;}
@@ -45,11 +47,11 @@ export class SceneComposer {
  apply(e){
   const c=e.config;e.anchor.position.fromArray(c.position);e.anchor.rotation.set(...c.rotation.map(THREE.MathUtils.degToRad));e.anchor.scale.fromArray(c.scale);e.anchor.visible=c.visible;e.anchor.name=c.name;
   if(!e.loaded)return;const key=JSON.stringify(c.material);
-  if(key!==e.materialKey){e.materialKey=key;if(c.material.preset==='original'){for(const [o,m] of e.originals)o.material=m;e.override?.dispose();e.override=null;}
-   else {const m=c.material;const previous=e.override;e.override=new THREE.MeshPhysicalMaterial({color:m.color,metalness:m.metalness,roughness:m.roughness,transparent:m.opacity<1,opacity:m.opacity,depthWrite:m.opacity>.9,clearcoat:.65,emissive:m.color,emissiveIntensity:m.emissive});
-    if(m.preset==='hologram'){e.override.onBeforeCompile=shader=>{shader.uniforms.astraObjectTime=this.time;shader.vertexShader='varying vec3 asObjectPosition;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n asObjectPosition=position;');shader.fragmentShader='uniform float astraObjectTime;varying vec3 asObjectPosition;\n'+shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n float scan=pow(max(0.,1.-abs(fract(asObjectPosition.y*.12-astraObjectTime*.15)-.5)*12.),3.);totalEmissiveRadiance+=diffuseColor.rgb*scan*.8;');};e.override.customProgramCacheKey=()=> 'astra-object-hologram-v1';}
-    for(const [o] of e.originals)o.material=e.override;previous?.dispose();
-   }
+  if(key!==e.materialKey){
+   e.materialKey=key;const previous=e.materialLease;
+   if(c.material.preset==='original'){for(const [o,m]of e.originals)o.material=m;e.override=null;e.materialLease=null;}
+   else{e.materialLease=this.materials.acquire(c.material);e.override=e.materialLease.material;for(const [o]of e.originals)o.material=e.override;}
+   previous?.release();
   }
   e.anchor.updateWorldMatrix(true,true);
  }
@@ -65,6 +67,7 @@ export class SceneComposer {
    e.visual.scale.setScalar(a.type==='pulse'?1+Math.sin(time*s*2)*.035:1);
   }
  }
+ telemetry(){return [...this.entries.values()].map(e=>({id:e.id,loaded:e.loaded,error:e.error||'',position:e.anchor.position.toArray(),rotation:[e.anchor.rotation.x,e.anchor.rotation.y,e.anchor.rotation.z].map(THREE.MathUtils.radToDeg),scale:e.anchor.scale.toArray(),preset:e.config.material.preset,color:e.override?'#'+e.override.color.getHexString():'original',texture:e.config.material.texture,textureReady:!e.override?.map||!!e.override.map.image,textureRepeat:e.override?.map?.repeat.toArray(),textureRotation:e.override?.map?THREE.MathUtils.radToDeg(e.override.map.rotation):0}));}
  get dynamicShadows(){return [...this.entries.values()].some(e=>e.loaded&&e.anchor.visible&&(e.dynamic||e.config.animation.type!=='none'));}
  poi(e){
   if(!e.loaded)return null;const c=e.config,l=c.label;
@@ -73,10 +76,10 @@ export class SceneComposer {
  }
  labels(){return [...this.entries.values()].filter(e=>e.config.visible&&e.config.label.enabled).map(e=>this.poi(e)).filter(Boolean);}
  pick(object){let o=object;while(o){const id=o.userData.sceneObjectId;if(id)return this.entries.get(id);o=o.parent;}return null;}
- transform(id){const e=this.entries.get(id);if(!e)return null;return {id,position:e.anchor.position.toArray().map(round),rotation:[e.anchor.rotation.x,e.anchor.rotation.y,e.anchor.rotation.z].map(v=>round(THREE.MathUtils.radToDeg(v))),scale:e.anchor.scale.toArray().map(v=>Math.max(.02,round(v)))};}
+ transform(id){const e=this.entries.get(id);if(!e)return null;return {id,position:e.anchor.position.toArray().map(round),rotation:[e.anchor.rotation.x,e.anchor.rotation.y,e.anchor.rotation.z].map(v=>round(THREE.MathUtils.radToDeg(v))),scale:e.anchor.scale.toArray().map(v=>Math.max(MIN_OBJECT_SCALE,Math.min(MAX_OBJECT_SCALE,round(v))))};}
  ground(id){const e=this.entries.get(id);if(!e?.loaded)return null;e.anchor.updateWorldMatrix(true,true);const box=new THREE.Box3().setFromObject(e.anchor);e.anchor.position.y-=box.min.y;return this.transform(id);}
  retry(id){const e=this.entries.get(id);if(!e||e.loaded)return;e.error='';this.load(e);}
- release(e){e.removed=true;e.mixer?.stopAllAction();e.mixer?.uncacheRoot(e.mixer.getRoot());for(const [o,m] of e.originals)o.material=m;e.override?.dispose();disposeObject(e.anchor);e.anchor.removeFromParent();}
- dispose(){this.dead=true;for(const e of this.entries.values())this.release(e);this.entries.clear();this.draco?.dispose();}
+ release(e){e.removed=true;e.mixer?.stopAllAction();e.mixer?.uncacheRoot(e.mixer.getRoot());for(const [o,m] of e.originals)o.material=m;e.materialLease?.release();disposeObject(e.anchor);e.anchor.removeFromParent();}
+ dispose(){this.dead=true;for(const e of this.entries.values())this.release(e);this.entries.clear();this.materials.dispose();this.draco?.dispose();}
 }
 const round=v=>Math.round(v*1000)/1000;
